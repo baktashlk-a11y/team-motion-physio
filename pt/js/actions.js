@@ -59,8 +59,12 @@ document.addEventListener("click", (e) => {
     case "go-preview": {
       const d = getDraft(p);
       if (!d.why.trim()) {
-        $("#why").focus();
-        toast("Add a short reason first.");
+        // No reason yet: jump to the box and show the red message
+        const box = $("#why");
+        box.classList.add("invalid");
+        $("#why-error").hidden = false;
+        box.scrollIntoView({ behavior: "smooth", block: "center" });
+        box.focus({ preventScroll: true });
         break;
       }
       location.hash = `#/patient/${p.id}/preview`;
@@ -139,11 +143,12 @@ document.addEventListener("input", (e) => {
   if (!p) return;
   getDraft(p).why = el.value;
   save();
-  const btn = document.querySelector('[data-action="go-preview"]');
-  const has = el.value.trim() !== "";
-  if (btn) btn.disabled = !has || getDraft(p).items.length === 0;
-  const hint = $("#why-hint");
-  if (hint) hint.hidden = has;
+  // Once they type, the red message goes away
+  if (el.value.trim() !== "") {
+    el.classList.remove("invalid");
+    const err = $("#why-error");
+    if (err) err.hidden = true;
+  }
 });
 
 document.addEventListener("submit", (e) => {

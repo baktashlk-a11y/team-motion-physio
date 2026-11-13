@@ -16,7 +16,7 @@ function pagePreview(p) {
     : "Reason only";
 
   return `
-  ${patientHeader(p, `#/patient/${p.id}/edit`, "Back to edit plan")}
+  ${crumbs([["Patients", "#/patients"], [p.name, `#/patient/${p.id}`], ["Edit plan", `#/patient/${p.id}/edit`], ["Preview"]])}
   <div class="page-head"><div><h1>Preview ${esc(firstName(p))}'s update</h1><p class="muted">Check what ${esc(firstName(p))} will see.</p></div></div>
   ${stepper(1, 1)}
   <div class="preview-grid">
@@ -60,7 +60,7 @@ function pagePreview(p) {
   </div>`;
 }
 function noDraft(p) {
-  return `${patientHeader(p, `#/patient/${p.id}`, `Back to ${firstName(p)}`)}
+  return `${crumbs([["Patients", "#/patients"], [p.name, `#/patient/${p.id}`], ["Preview"]])}
   <section class="card empty-state"><h3>No draft to preview</h3><p>Start by editing ${esc(firstName(p))}'s plan.</p>
   <p style="margin-top:1rem"><a class="btn" href="#/patient/${p.id}/edit">Edit plan</a></p></section>`;
 }

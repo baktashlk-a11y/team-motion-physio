@@ -15,7 +15,7 @@ function pageReview(p, params) {
   const next = idx >= 0 && idx < list.length - 1 ? list[idx + 1] : null;
 
   return `
-  ${patientHeader(p, `#/patient/${p.id}`, `Back to ${firstName(p)}`)}
+  ${crumbs([["Patients", "#/patients"], [p.name, `#/patient/${p.id}`], ["Review daily moments"]])}
   <div class="page-head"><div><h1>Review daily moments</h1><p class="muted">${esc(firstName(p))} · daily moments, check-ins and questions</p></div></div>
   <div class="chips" style="margin-bottom:1rem">${chip("all", "All", p.updates.length)}${chip("moment", "Moments", countKind(p, "moment"))}${chip("checkin", "Check-ins", countKind(p, "checkin"))}${chip("question", "Questions", countKind(p, "question"))}</div>
   ${

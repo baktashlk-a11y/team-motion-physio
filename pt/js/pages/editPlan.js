@@ -51,7 +51,6 @@ function pageEdit(p) {
   const musts = mustItems(d.items);
   const q = p.updates.filter((u) => u.kind === "question");
   const nextVer = p.plan.version + 1;
-  const whyMissing = d.why.trim() === "";
   let mustNote = "";
   if (musts.length === 0)
     mustNote = `<p class="notice warn small">No must-dos yet. ${esc(firstName(p))} won't have a backup plan for hard weeks.</p>`;
@@ -61,7 +60,7 @@ function pageEdit(p) {
     mustNote = `<p class="notice good small">On hard weeks: ${musts.length} must-do${musts.length > 1 ? "s" : ""}, about ${totalMin(musts)} min.</p>`;
 
   return `
-  ${patientHeader(p, `#/patient/${p.id}`, `Back to ${firstName(p)}`)}
+  ${crumbs([["Patients", "#/patients"], [p.name, `#/patient/${p.id}`], ["Edit plan"]])}
   <div class="page-head"><div><h1>Edit ${esc(firstName(p))}'s home plan</h1><p class="muted">Connect the plan to ${esc(firstName(p))}'s real life.</p></div></div>
   ${stepper(0, 0)}
   <div class="grid two">
@@ -92,7 +91,8 @@ function pageEdit(p) {
 
       <div class="field" style="margin-top:1.25rem">
         <label for="why">Why did we make this change? <span class="req">Required</span></label>
-        <textarea id="why" data-action="why" placeholder="Some weeks are sore or busy. These 3 keep your lifting on track until our next visit.">${esc(d.why)}</textarea>
+        <textarea id="why" data-action="why" aria-describedby="why-error" placeholder="For example: Some weeks are sore or busy. These 3 keep your lifting on track until our next visit.">${esc(d.why)}</textarea>
+        <span class="field-error" id="why-error" hidden>Write a short reason. ${esc(firstName(p))} will read it.</span>
         <span class="hint">${esc(firstName(p))} reads this with the plan. Keep it short and plain.</span>
       </div>
       <div class="field" style="margin-top:1rem">
@@ -128,6 +128,6 @@ function pageEdit(p) {
   </div>
   <div class="bottom-bar">
     <div class="btn-row"><button class="btn ghost" data-action="cancel-draft" data-id="${p.id}">Cancel draft</button><span class="muted small">${esc(firstName(p))}'s plan stays the same until you publish.</span></div>
-    <div class="btn-row">${whyMissing ? `<span class="hint" id="why-hint">Add a reason to preview.</span>` : ""}<button class="btn" data-action="go-preview" data-id="${p.id}" ${whyMissing || d.items.length === 0 ? "disabled" : ""}>Preview update</button></div>
+    <div class="btn-row"><button class="btn" data-action="go-preview" data-id="${p.id}" ${d.items.length === 0 ? "disabled" : ""}>Preview update</button></div>
   </div>`;
 }

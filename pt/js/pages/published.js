@@ -2,7 +2,7 @@
 function pagePublished(p) {
   const pub = state.published[p.id];
   if (!pub)
-    return `${patientHeader(p, `#/patient/${p.id}`, `Back to ${firstName(p)}`)}
+    return `${crumbs([["Patients", "#/patients"], [p.name, `#/patient/${p.id}`], ["Published"]])}
     <section class="card empty-state"><h3>Nothing published yet</h3><p>Publish a plan update to see it here.</p></section>`;
   const nextUp = allVisits()
     .filter(
@@ -17,6 +17,7 @@ function pagePublished(p) {
     )[0];
   const np = nextUp && getPatient(nextUp.patient);
   return `
+  ${crumbs([["Patients", "#/patients"], [p.name, `#/patient/${p.id}`], ["Published"]])}
   <div class="page-head"><div><h1>Plan update published</h1><p class="muted">${esc(firstName(p))} can see it in her app now.</p></div></div>
   ${stepper(2, 3)}
   <section class="card done-card">

@@ -401,13 +401,68 @@ hr {
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
+/* Goal chart: fixed height, text stays the same size on any screen */
 .chart {
-  margin-top: 0.75rem;
+  margin: 1rem 0 0.75rem;
+  padding-left: 1.75rem;
 }
-.chart svg {
+.chart-plot {
+  position: relative;
+  height: 9rem;
+}
+.chart-plot svg {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
-  display: block;
+  height: 100%;
+  overflow: visible;
+}
+.chart-grid {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+.chart-grid em {
+  position: absolute;
+  left: -1.75rem;
+  top: -0.5rem;
+  font-style: normal;
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+.chart-dot {
+  position: absolute;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin: -0.25rem 0 0 -0.25rem;
+  border-radius: 50%;
+  background: #fff;
+}
+.chart-dot.last {
+  width: 0.75rem;
+  height: 0.75rem;
+  margin: -0.375rem 0 0 -0.375rem;
+  background: var(--beige);
+}
+.chart-value {
+  position: absolute;
+  transform: translate(-50%, -1.75rem);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+}
+.chart-dates {
+  position: relative;
+  height: 1.25rem;
+  margin-top: 0.5rem;
+}
+.chart-dates span {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
 }
 .ex-list {
   list-style: none;
@@ -862,4 +917,20 @@ a.chip {
   border-radius: var(--radius);
   font-size: 0.75rem;
   white-space: pre-wrap;
+}
+
+/* Reason box on Edit plan: lighter example text, red outline when empty */
+#why::placeholder {
+  color: var(--text-hint);
+  font-style: italic;
+}
+textarea.invalid,
+textarea.invalid:focus {
+  border-color: var(--alert);
+  box-shadow: 0 0 0 3px var(--alert-light);
+}
+.field-error {
+  color: var(--alert);
+  font-size: 0.8125rem;
+  font-weight: 600;
 }
