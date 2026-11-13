@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#245c48" />
+
+    <!-- Lets "Add to Home Screen" open the prototype full screen like a real app -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Recovery" />
+
+    <title>Patient · Recovery Beyond Clinic</title>
+    <link rel="stylesheet" href="../sharedComponents/designSystem.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/home.css" />
+    <link rel="stylesheet" href="css/exercises.css" />
+    <link rel="stylesheet" href="css/log.css" />
+    <link rel="stylesheet" href="css/progress.css" />
+    <link rel="stylesheet" href="css/profile.css" />
+  </head>
+  <body>
+    <div class="preview">
+      <header class="preview-caption">
+        <strong id="app-name">Recovery <em>Beyond Clinic</em></strong
+        ><small>Patient preview · 390 × 844</small>
+      </header>
+
+      <div class="phone">
+        <!-- Fake status bar for the laptop preview. Hidden on a real phone. -->
+        <div class="status-bar" aria-hidden="true">
+          <span>9:41</span>
+          <span class="dynamic-island"></span>
+          <span class="status-icons">
+            <svg class="signal-icon" viewBox="0 0 18 12" fill="currentColor">
+              <rect x="0" y="8" width="3" height="4" rx="0.8" />
+              <rect x="5" y="6" width="3" height="6" rx="0.8" />
+              <rect x="10" y="3" width="3" height="9" rx="0.8" />
+              <rect x="15" y="0" width="3" height="12" rx="0.8" />
+            </svg>
+            <svg class="battery-icon" viewBox="0 0 24 14" fill="none">
+              <rect
+                x="1"
+                y="2"
+                width="19"
+                height="10"
+                rx="2"
+                stroke="currentColor"
+              />
+              <rect
+                x="3"
+                y="4"
+                width="15"
+                height="6"
+                rx="1"
+                fill="currentColor"
+              />
+              <path d="M22 5v4" stroke="currentColor" stroke-width="2" />
+            </svg>
+          </span>
+        </div>
+
+        <!-- Each screen is drawn in here -->
+        <main id="app" class="app-content" tabindex="-1"></main>
+
+        <!-- Notification, toast and pop-ups sit on top of the screen -->
+        <div id="notify" class="notify" role="status" aria-live="polite"></div>
+        <div id="toast" class="toast" role="status" aria-live="polite"></div>
+        <div id="overlay-root"></div>
+
+        <div class="home-indicator" aria-hidden="true"></div>
+      </div>
+
+      <footer class="preview-note">
+        Demo data · saved in this browser only<br />
+        <button class="text-button" type="button" data-action="reset-demo">
+          Reset demo
+        </button>
+      </footer>
+    </div>
+
+    <!-- Load order matters: data → state → helpers → pages → router → main (last) -->
+    <script src="js/data.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/helpers.js"></script>
+    <script src="js/pages/home.js"></script>
+    <script src="js/pages/exercises.js"></script>
+    <script src="js/pages/log.js"></script>
+    <script src="js/pages/progress.js"></script>
+    <script src="js/pages/profile.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,71 @@
+/* Log: list of moments, the form, saved screen and details. */
+
+.moment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+.moment-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+}
+.moment-card:hover {
+  border-color: var(--forest);
+}
+.moment-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02rem;
+}
+.discomfort-badge {
+  flex: none;
+  padding: 0.125rem 0.4rem;
+  border-radius: 0.3rem;
+  background: var(--soft-green);
+  color: var(--forest);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.discomfort-badge.is-high {
+  background: var(--beige);
+  color: var(--beige-text);
+}
+.discomfort-badge.is-severe {
+  background: var(--alert-light);
+  color: var(--alert);
+}
+.moment-activity {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.moment-detail {
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+}
+.moment-note {
+  margin-top: 0.375rem;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.when-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 0.5rem;
+}
+.screen-moment-detail .session-summary {
+  margin-top: 0.25rem;
+}

@@ -1,0 +1,8 @@
+Patient app source: ../patient/index.html
+
+The runnable app lives in the repository's patient/ folder:
+- patient/index.html
+- patient/css/patient.css
+- patient/js/patient.js
+
+It reuses sharedComponents/designSystem.css.

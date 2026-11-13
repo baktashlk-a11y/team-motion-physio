@@ -1,0 +1,427 @@
+/* Home, Visit prep and Messages. */
+
+/* ---------- Home ---------- */
+.home-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1.25rem 0;
+}
+.today {
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.bell {
+  position: relative;
+  margin-right: -0.625rem;
+}
+.badge-dot {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.35rem;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding: 0 0.25rem;
+  border: 2px solid var(--bg);
+  border-radius: 1rem;
+  background: var(--alert);
+  color: #fff;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 0.875rem;
+  text-align: center;
+}
+.greeting {
+  margin: 0.25rem 0 1.25rem;
+  font-size: 1.75rem;
+  letter-spacing: -0.05rem;
+}
+
+/* Goal card with the chart */
+.goal-card {
+  padding: 1.125rem 1.125rem 1rem;
+  border-radius: 1.25rem;
+  background: var(--forest);
+  color: var(--card);
+}
+.goal-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 0.5rem;
+}
+.goal-heading .eyebrow {
+  color: #d6e7dc;
+}
+.goal-card h2 {
+  max-width: 17rem;
+  font-size: 1.5rem;
+}
+/* A thin line splits the goal from the chart, so the card breathes */
+.chart-question {
+  margin: 1.25rem 0 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ffffff26;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+/* Scale legend in beige, so it stands out from the white text. Used on Home and Progress. */
+.chart-legend {
+  margin-bottom: 1rem;
+  color: var(--beige);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.chart-legend strong {
+  font-weight: 700;
+}
+.goal-caption {
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+}
+.goal-caption strong {
+  color: var(--beige);
+}
+
+/* Chart colours: light lines on the green card, green lines on white cards */
+.comfort-chart {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  --line: #fff;
+  --dot: var(--beige);
+  --grid: #ffffff33;
+  --label: #ffffffb3;
+  --goal: var(--beige);
+}
+.comfort-chart text {
+  font: 500 10px var(--font-body);
+}
+.chart-grid path {
+  stroke: var(--grid);
+  stroke-width: 1;
+}
+.chart-axis text {
+  fill: var(--label);
+}
+.chart-goal {
+  stroke: var(--goal);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+.chart-goal-label {
+  fill: var(--goal);
+  font-weight: 600 !important;
+}
+.chart-line {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.chart-dot {
+  fill: var(--dot);
+  stroke: var(--forest);
+  stroke-width: 2;
+}
+.chart-dot.now {
+  stroke: var(--line);
+  stroke-width: 2.5;
+}
+.chart-value {
+  fill: var(--line);
+  font: 700 13px var(--font-body) !important;
+}
+
+/* Visit reminder */
+.reminder-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding: 0.875rem 0.875rem 0.875rem 1rem;
+  border-radius: var(--radius-l);
+  background: var(--soft-green);
+  color: var(--forest);
+  text-decoration: none;
+}
+.reminder-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--card);
+}
+.reminder-card .row-text small {
+  color: var(--text-secondary);
+}
+.reminder-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.reminder-link .icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Plan card: same layout before and after starting */
+.plan-card {
+  margin-top: 1rem;
+  padding: 1.125rem 1rem 1rem;
+}
+.plan-card .card-heading h2 {
+  font-size: 1.1875rem;
+}
+.date-chip {
+  flex: 0 0 auto;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  background: #eef1ef;
+  color: var(--text-secondary);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+.plan-copy {
+  margin: 0.5rem 0 0.875rem;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+.plan-meter {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.375rem;
+  font-size: 0.8125rem;
+}
+.meter-label strong {
+  color: var(--forest);
+}
+.plan-meter .muted {
+  font-size: 0.75rem;
+}
+.progress-bar {
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: #e6ebe7;
+}
+.progress-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 1rem;
+  background: var(--forest);
+  transition: width 300ms ease;
+}
+.plan-list {
+  margin: 0.75rem 0 1rem;
+}
+.plan-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2.5rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+}
+.plan-item:last-child {
+  border-bottom: 0;
+}
+.plan-name {
+  flex: 1;
+}
+.plan-min {
+  min-width: 2.75rem;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  text-align: right;
+}
+.plan-item.done .plan-name {
+  color: var(--text-secondary);
+}
+.plan-item.done .plan-min {
+  color: var(--forest);
+  font-weight: 600;
+}
+.status-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 1.375rem;
+  width: 1.375rem;
+  height: 1.375rem;
+  border: 1.5px solid var(--border-strong, #cfd6d2);
+  border-radius: 50%;
+  color: #fff;
+}
+.done .status-dot {
+  border-color: var(--forest);
+  background: var(--forest);
+}
+.status-dot .icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  stroke-width: 2.4;
+}
+.plan-card.is-paused .plan-list {
+  opacity: 0.55;
+}
+/* Buddy card under the plan */
+.buddy-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: var(--radius-l);
+  background: var(--card);
+  text-decoration: none;
+}
+.buddy-card .row-text strong {
+  font-size: 0.875rem;
+}
+.buddy-card .status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.buddy-card .status-pill .icon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+/* Plans with buddies, same card style as the plan card */
+.buddy-plans {
+  margin-top: 0.75rem;
+  padding: 1rem 1rem 0.25rem;
+}
+.buddy-plans .card-heading h2 {
+  font-size: 1.1875rem;
+}
+.buddy-plans ul {
+  margin-top: 0.5rem;
+}
+.buddy-plan {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+}
+.buddy-plan .row-text strong {
+  font-weight: 500;
+}
+.buddy-plan.is-waiting .row-text strong {
+  color: var(--text-secondary);
+}
+.buddy-plans li:last-child .buddy-plan {
+  border-bottom: 0;
+}
+/* Plain + next to the title. The icon is small, but the tap area stays 2.75rem. */
+.add-plan {
+  margin: -0.625rem -0.625rem -0.625rem 0;
+}
+.add-plan .icon {
+  width: 1.375rem;
+  height: 1.375rem;
+  stroke-width: 2;
+}
+.section-caption {
+  margin-top: 1.25rem;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+/* ---------- Visit prep ---------- */
+.screen-prep .section-title:first-child {
+  margin-top: 0.25rem;
+}
+.note-row .row-text {
+  line-height: 1.45;
+}
+.note-row .row-chevron {
+  color: var(--forest);
+}
+.add-note {
+  margin-top: 0.75rem;
+}
+
+/* ---------- Messages ---------- */
+.message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.message-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: var(--radius);
+  background: var(--card);
+  text-decoration: none;
+}
+.message-row.unread {
+  border-color: var(--forest);
+}
+.message-row.is-alert {
+  border-color: var(--alert);
+  background: #fffaf8;
+}
+.message-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.message-top small {
+  color: var(--text-hint);
+  font-size: 0.6875rem;
+}
+.message-title {
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+}
+.unread .message-title {
+  color: var(--text);
+  font-weight: 500;
+}
+.unread-dot {
+  flex: 0 0 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--forest);
+}
+.is-alert .unread-dot {
+  background: var(--alert);
+}
+.message-card {
+  padding: 1.125rem 1rem;
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: var(--radius-l);
+  background: var(--card);
+  line-height: 1.65;
+}
+.message-card h2 {
+  margin-bottom: 0.625rem;
+  font-size: 1.1875rem;
+}
+.message-card.is-alert {
+  border-color: #e7b9aa;
+  background: #fffaf8;
+}
+.message-card .alert-heading {
+  margin-bottom: 0.625rem;
+  font-size: 0.8125rem;
+}

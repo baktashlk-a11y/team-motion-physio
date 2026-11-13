@@ -1,0 +1,41 @@
+/* Recovery Beyond Clinic: shared design tokens.
+   Both the PT side and the patient side use these, so they match.
+   Names follow our style guide (Forest, Soft green, Beige, Off-white, White). */
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  /* Style guide colors */
+  --forest: #245c48; /* main green: buttons, goal card, active menu */
+  --forest-hover: #1a4636; /* darker Forest for hover */
+  --soft-green: #bacebe; /* light green backgrounds */
+  --beige: #ecddc6; /* avatars and wins */
+  --bg: #f7f8f7; /* Off-white page background */
+  --card: #ffffff; /* White cards */
+
+  /* Text */
+  --text: #1e2a25; /* main text */
+  --text-secondary: #56635d; /* dates, subtitles */
+  --text-hint: #8a958f; /* hints, placeholders */
+  --beige-text: #6b5232; /* text on beige */
+
+  /* Lines and alerts */
+  --border: #e2e6e3; /* dividers inside cards */
+  --border-strong: #d3dad6; /* card edges, inputs */
+  --alert: #a9503a; /* high discomfort, remove */
+  --alert-light: #f6e4dd; /* light alert background */
+
+  /* Fonts */
+  --font-title: "Fraunces", Georgia, serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Corners and shadow */
+  --radius-s: 0.5rem;
+  --radius: 0.75rem;
+  --radius-l: 1rem;
+  --shadow:
+    0 0.0625rem 0.125rem rgba(30, 42, 37, 0.04),
+    0 0.25rem 1rem rgba(30, 42, 37, 0.05);
+  --shadow-card:
+    0 0.0625rem 0.1875rem rgba(30, 42, 37, 0.06),
+    0 0.125rem 0.5rem rgba(30, 42, 37, 0.04);
+}

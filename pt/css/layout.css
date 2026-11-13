@@ -1,0 +1,296 @@
+/* Layout: the frame around every page (sidebar + top bar + main area). */
+:root {
+  --bar-h: 4.5rem;
+} /* height of the logo area and the top bar, so they line up */
+
+.shell {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+/* ---- Sidebar ---- */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: var(--bar-h);
+  padding: 0 1.25rem;
+  text-decoration: none;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  flex: none;
+}
+.brand-mark {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.625rem;
+  background: var(--forest);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+.brand-text {
+  font-family: var(--font-title);
+  font-weight: 600;
+  line-height: 1.15;
+  font-size: 1rem;
+}
+.brand-text em {
+  font-weight: 400;
+}
+.side-label {
+  margin: 1.5rem 0 0.5rem;
+  padding: 0 1.75rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0 1rem;
+}
+.side-nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius-s);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+}
+.side-nav a:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+.side-nav a.active {
+  background: var(--soft-green);
+  color: var(--forest);
+  font-weight: 600;
+}
+
+/* ---- Top bar ---- */
+.content {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: var(--bar-h);
+  padding: 0 2rem;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+/* Today's date, top left */
+.today-date {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+
+/* Patient search in the top bar */
+.search {
+  position: relative;
+  width: min(20rem, 100%);
+}
+/* White box, darker edge, magnifying glass drawn on the left */
+.search input {
+  width: 100%;
+  padding: 0.5625rem 1rem 0.5625rem 2.5rem;
+  border-radius: 2rem;
+  border: 1px solid var(--border-strong);
+  background: var(--card) no-repeat 0.9rem center / 1rem
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='7' cy='7' r='5' fill='none' stroke='%2356635D' stroke-width='1.6'/%3E%3Cpath d='M11 11l3.5 3.5' stroke='%2356635D' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+.search input::placeholder {
+  color: var(--text-secondary);
+}
+.search input:hover {
+  border-color: var(--text-hint);
+}
+.search input:focus {
+  border-color: var(--forest);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--soft-green);
+}
+.search-results {
+  position: absolute;
+  top: calc(100% + 0.375rem);
+  right: 0;
+  width: max(100%, 26rem);
+  margin: 0;
+  padding: 0.375rem;
+  list-style: none;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.search-results a {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: var(--radius-s);
+  text-decoration: none;
+  color: var(--text);
+  line-height: 1.25;
+}
+.search-results a:hover,
+.search-results a.focus {
+  background: var(--soft-green);
+}
+.search-results small {
+  color: var(--text-secondary);
+}
+.search-results .empty {
+  padding: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Signed-in person: the sidebar's footer */
+.side-profile {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: var(--bar-h);
+  padding: 0 1.25rem;
+  border-top: 1px solid var(--border);
+  text-decoration: none;
+  color: var(--text);
+  line-height: 1.25;
+}
+.side-profile:hover {
+  background: var(--bg);
+}
+.side-profile.active {
+  background: var(--soft-green);
+}
+.side-profile small {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.avatar {
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--beige);
+  color: var(--beige-text);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.8125rem;
+}
+.avatar.lg {
+  width: 3.5rem;
+  height: 3.5rem;
+  font-size: 1.125rem;
+}
+.icon-btn {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  background: var(--card);
+  text-decoration: none;
+  color: var(--text);
+}
+
+/* ---- Main area: fills the screen width ---- */
+main {
+  flex: 1;
+  width: 100%;
+  padding: 2rem;
+  outline: none;
+}
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.page-head p {
+  margin-top: 0.375rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1.25rem;
+}
+.grid.two {
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+}
+.grid.half {
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 68rem) {
+  .grid.two,
+  .grid.half {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Cards ---- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-l);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-card);
+}
+.card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.card-head a {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.card.tint {
+  background: var(--soft-green);
+  border-color: transparent;
+  box-shadow: none;
+}
+/* Stack: puts children in a column with the same gap between them */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}

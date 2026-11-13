@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clinic workspace · Recovery Beyond Clinic</title>
+    <link rel="stylesheet" href="../sharedComponents/designSystem.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <!-- Side menu: visible on every page -->
+      <aside class="sidebar" aria-label="Main menu">
+        <a class="brand" href="#/home">
+          <span class="brand-mark" aria-hidden="true">R</span>
+          <span class="brand-text">Recovery<br /><em>Beyond Clinic</em></span>
+        </a>
+        <p class="side-label">CLINIC WORKSPACE</p>
+        <nav class="side-nav">
+          <a href="#/home" data-nav="home">Home</a>
+          <a href="#/patients" data-nav="patients">Patients</a>
+          <a href="#/library" data-nav="library">Plan library</a>
+        </nav>
+        <!-- Who is signed in, at the bottom of the sidebar -->
+        <a class="side-profile" id="side-profile" href="#/account">
+          <span class="avatar">J</span>
+          <span
+            ><strong>Jordan Lee</strong><br /><small>Valley Physio</small></span
+          >
+        </a>
+      </aside>
+
+      <div class="content">
+        <header class="topbar">
+          <strong class="today-date" id="today-date"></strong>
+          <!-- Find a patient from any page -->
+          <div class="search" role="search">
+            <label for="global-search" class="sr-only">Find a patient</label>
+            <input
+              id="global-search"
+              type="search"
+              placeholder="Find a patient…"
+              autocomplete="off"
+              aria-controls="search-results"
+              aria-expanded="false"
+            />
+            <ul
+              id="search-results"
+              class="search-results"
+              role="listbox"
+              hidden
+            ></ul>
+          </div>
+        </header>
+        <main id="main" tabindex="-1"></main>
+      </div>
+    </div>
+
+    <div id="modal-root"></div>
+    <div id="toast-root" aria-live="polite"></div>
+
+    <!-- Load order matters: data → state → helpers → pages → router → actions → start -->
+    <script src="js/data.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/helpers.js"></script>
+    <script src="js/pages/home.js"></script>
+    <script src="js/pages/patients.js"></script>
+    <script src="js/pages/patient.js"></script>
+    <script src="js/pages/review.js"></script>
+    <script src="js/pages/editPlan.js"></script>
+    <script src="js/pages/preview.js"></script>
+    <script src="js/pages/published.js"></script>
+    <script src="js/pages/library.js"></script>
+    <script src="js/pages/account.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/modals.js"></script>
+    <script src="js/actions.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
