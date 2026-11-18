@@ -7,7 +7,17 @@ function parseHash() {
   return { parts, params };
 }
 
+let renderedHash = null;
+
 function render() {
+  const samePage = renderedHash === location.hash;
+  const scrollPosition = { left: window.scrollX, top: window.scrollY };
+  const focused = document.activeElement;
+  const focusAttributes = focused
+    ? ["data-action", "data-id", "data-i", "data-ex", "aria-label"]
+        .filter((name) => focused.hasAttribute(name))
+        .map((name) => [name, focused.getAttribute(name)])
+    : [];
   const { parts, params } = parseHash();
   const [section, id, sub] = parts;
   let html = "";
@@ -58,9 +68,26 @@ function render() {
   $("#side-profile").classList.toggle("active", nav === "account");
   closeModal();
   clearSearch();
-  window.scrollTo(0, 0);
-  main.focus({ preventScroll: true });
   afterRender();
+  renderedHash = location.hash;
+  if (samePage) {
+    const replacement = focused?.isConnected
+      ? focused
+      : focused?.id
+        ? document.getElementById(focused.id)
+        : focusAttributes.some(([name]) => name === "data-action")
+          ? Array.from(main.querySelectorAll("[data-action]")).find(
+              (el) =>
+                el.tagName === focused.tagName &&
+                focusAttributes.every(([name, value]) => el.getAttribute(name) === value),
+            )
+          : null;
+    (replacement || main).focus({ preventScroll: true });
+    window.scrollTo(scrollPosition);
+  } else {
+    window.scrollTo(0, 0);
+    main.focus({ preventScroll: true });
+  }
 }
 
 /* Empty the top-bar search when the page changes, so old text doesn't stay behind. */

@@ -147,7 +147,7 @@ function planCard() {
     <div class="progress-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Plan progress"><span style="width:${pct}%"></span></div>
     <ul class="plan-list">${EXERCISES.map(
       (ex) =>
-        `<li class="plan-item ${isDone(ex.id) ? "done" : ""}"><span class="status-dot">${isDone(ex.id) ? icon("check") : ""}</span><span class="plan-name">${ex.name}</span><span class="plan-min">${isDone(ex.id) ? "Done" : `${ex.minutes} min`}</span></li>`,
+        `<li class="plan-item ${isDone(ex.id) ? "done" : ""}"><span class="plan-name">${ex.name}</span><span class="plan-status">${isDone(ex.id) ? `${icon("check")} Done` : "Not started"}</span><span class="plan-min">${ex.minutes} min</span></li>`,
     ).join("")}</ul>
     ${action}
   </section>`;
@@ -225,7 +225,7 @@ PAGES.prepNote = {
   render({ index }) {
     const editing = index !== undefined;
     const text = editing ? state.prep.questions[Number(index)] : "";
-    return `<form class="screen screen-note" data-submit="prep-note" data-index="${editing ? index : ""}">${header(editing ? "Edit note" : "Add a note", "back", { closeIcon: true })}
+    return `<form class="screen screen-note" data-submit="prep-note" data-index="${editing ? index : ""}">${header(editing ? "Edit note" : "Add a note", "#/prep", { closeIcon: true })}
       <div class="screen-body">
         <div class="field-group"><label for="note-text">Question or note for your PT</label><textarea id="note-text" rows="4" maxlength="300" placeholder="e.g. Can I go back to yoga?">${esc(text)}</textarea></div>
       </div>
@@ -252,7 +252,7 @@ SUBMITS["prep-note"] = (form) => {
   if (index === "") state.prep.questions.push(text);
   else state.prep.questions[Number(index)] = text;
   save();
-  history.back(); /* back to the prep page */
+  go("/prep", { replace: true });
   toast("Note saved");
 };
 
@@ -266,7 +266,7 @@ ACTIONS["delete-note"] = (el) => {
     onConfirm: () => {
       state.prep.questions.splice(Number(el.dataset.index), 1);
       save();
-      history.back();
+      go("/prep", { replace: true });
       toast("Note deleted");
     },
   });

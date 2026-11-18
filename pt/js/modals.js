@@ -6,7 +6,7 @@ function confirmCancelDraft(p) {
     save();
     location.hash = `#/patient/${p.id}`;
     render();
-    toast("Draft cancelled.", () => {
+    toast("Draft discarded.", () => {
       state.drafts[p.id] = old;
       save();
       render();
@@ -17,9 +17,9 @@ function confirmCancelDraft(p) {
     return;
   }
   openModal(
-    `<div class="modal-head"><h2>Cancel this draft?</h2><button class="close-x" aria-label="Close">×</button></div>
+    `<div class="modal-head"><h2>Discard this draft?</h2><button class="close-x" aria-label="Close">×</button></div>
     <p class="muted">Your changes will be lost. ${esc(firstName(p))}'s plan stays at version ${p.plan.version}.</p>
-    <div class="btn-row" style="margin-top:1.25rem"><button class="btn danger" id="yes">Cancel draft</button><button class="btn ghost" data-close-modal>Keep editing</button></div>`,
+    <div class="btn-row" style="margin-top:1.25rem"><button class="btn danger" id="yes">Discard draft</button><button class="btn ghost" data-close-modal>Keep editing</button></div>`,
     (m) => {
       m.querySelector("#yes").onclick = () => {
         closeModal();

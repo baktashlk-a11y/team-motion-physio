@@ -2,7 +2,7 @@
 function pageReview(p, params) {
   const filter = params.show || "all";
   const list = p.updates.filter((u) => filter === "all" || u.kind === filter);
-  const sel = p.updates.find((u) => u.id === params.item) || list[0];
+  const sel = list.find((u) => u.id === params.item) || list[0];
   if (sel && !state.reviewed[sel.id]) {
     state.reviewed[sel.id] = true;
     save();
@@ -12,6 +12,7 @@ function pageReview(p, params) {
   const chip = (k, label, n) =>
     `<a class="chip ${filter === k ? "on" : ""}" href="#/patient/${p.id}/review?show=${k}">${label} <span class="count">${n}</span></a>`;
   const idx = sel ? list.indexOf(sel) : -1;
+  const previous = idx > 0 ? list[idx - 1] : null;
   const next = idx >= 0 && idx < list.length - 1 ? list[idx + 1] : null;
 
   return `
@@ -42,10 +43,14 @@ function pageReview(p, params) {
       }
       <p class="hint" style="margin-top:1rem">Review these together before you change the plan.</p>
     </section>
-    <section class="card review-detail">${sel ? detailHTML(p, sel) : `<p class="muted">Pick an item on the left.</p>`}</section>
+    <section class="card review-detail">${sel ? detailHTML(p, sel) : `<p class="muted">No items in this view. Choose another filter above.</p>`}</section>
   </div>
   <div class="bottom-bar">
-    ${next ? `<a class="btn ghost" href="${qs({ item: next.id })}">Next item ›</a>` : `<span class="muted small">You've reached the last item.</span>`}
+    ${sel ? `<div class="btn-row">
+      ${previous ? `<a class="btn ghost" href="${qs({ item: previous.id })}">‹ Previous item</a>` : `<button class="btn ghost" disabled>‹ Previous item</button>`}
+      <span class="muted small">Item ${idx + 1} of ${list.length}</span>
+      ${next ? `<a class="btn ghost" href="${qs({ item: next.id })}">Next item ›</a>` : `<button class="btn ghost" disabled>Next item ›</button>`}
+    </div>` : `<span class="muted small">No items in this view.</span>`}
     <a class="btn" href="#/patient/${p.id}/edit">Edit plan together</a>
   </div>`
   }`;

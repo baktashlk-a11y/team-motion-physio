@@ -112,16 +112,34 @@ function button(
   return `<button type="button" class="${cls}" ${action ? `data-action="${action}"` : ""} ${attrs}>${label}</button>`;
 }
 
-/* Screen header with a back link. back is a route like "#/home". */
+/* Name the destination without taking space away from the screen title. */
+function returnDestination(back) {
+  const names = {
+    "#/home": "Home",
+    "#/log": "Log",
+    "#/progress": "Progress",
+    "#/profile": "Profile",
+    "#/prep": "visit preparation",
+    "#/inbox": "Messages",
+    "#/settings": "Settings",
+    "#/settings/privacy": "Privacy",
+  };
+  if (names[back]) return names[back];
+  if (back.startsWith("#/buddy/")) {
+    const buddy = buddyById(back.slice("#/buddy/".length));
+    if (buddy) return `${buddy.name}'s profile`;
+  }
+  return back.startsWith("#/plan/") ? "plan details" : "the previous screen";
+}
+
+/* Screen header with an explicit in-app return route, like "#/home". */
 function header(title, back, { sub = "", right = "", closeIcon = false } = {}) {
-  /* back = "back" goes to the last screen, for pages you can reach from more than one place */
-  const label = closeIcon ? "Close" : "Back";
-  const backHtml =
-    back === "back"
-      ? `<button type="button" class="icon-button" data-action="go-back" aria-label="${label}">${icon(closeIcon ? "close" : "back")}</button>`
-      : back
-        ? `<a class="icon-button" href="${back}" aria-label="${label}">${icon(closeIcon ? "close" : "back")}</a>`
-        : "";
+  const label = back
+    ? `${closeIcon ? "Close and return to" : "Back to"} ${returnDestination(back)}`
+    : "";
+  const backHtml = back
+    ? `<a class="icon-button" href="${esc(back)}" aria-label="${esc(label)}" title="${esc(label)}">${icon(closeIcon ? "close" : "back")}</a>`
+    : "";
   return `<header class="screen-header">${backHtml}<div class="screen-title"><h1>${title}</h1>${sub ? `<p class="muted">${sub}</p>` : ""}</div>${right}</header>`;
 }
 
@@ -186,12 +204,6 @@ function discomfortWord(value) {
   if (value < SEVERE) return "Moderate";
   return "Severe";
 }
-
-/* Back arrow for pages you can reach from more than one place. */
-ACTIONS["go-back"] = () => {
-  if (history.length > 1) history.back();
-  else go("/home");
-};
 
 /* ---------- Pop-up, toast and notification ---------- */
 let modalConfirm = null;

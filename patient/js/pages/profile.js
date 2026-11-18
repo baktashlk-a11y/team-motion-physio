@@ -279,7 +279,7 @@ SUBMITS.ask = () => {
     Object.assign(r, fields);
     state.askDraft = null;
     save();
-    history.back(); /* back to the plan page this edit came from */
+    go(`/plan/${r.id}`, { replace: true });
     toast(`Change sent to ${buddyById(r.buddy).name}`);
     buddyReplies(r.id);
     return;
@@ -296,7 +296,7 @@ SUBMITS.ask = () => {
 /* ---------- One plan with a buddy: change it, cancel it, or ask for more ---------- */
 
 PAGES.plan = {
-  tab: "home",
+  tab: ({ id }) => planReturnPath(id) === "/home" ? "home" : "profile",
   guard: ({ id }) =>
     state.requests.some((r) => r.id === id && buddyById(r.buddy))
       ? null
@@ -305,7 +305,7 @@ PAGES.plan = {
     const r = state.requests.find((x) => x.id === id);
     const b = buddyById(r.buddy);
     const confirmed = r.status === "yes";
-    return `<section class="screen screen-plan">${header(`Plan with ${esc(b.name)}`, "back")}
+    return `<section class="screen screen-plan">${header(`Plan with ${esc(b.name)}`, `#${planReturnPath(id)}`)}
       <div class="screen-body">
         <div class="profile-head">${avatar(b.name, confirmed ? "large" : "large pending")}<div><h2>${planWhat(r)}</h2><p class="muted">${confirmed ? `${esc(b.name)} confirmed` : `Asked ${esc(b.name)} · no reply yet`}</p></div></div>
         ${receipt([
@@ -344,7 +344,7 @@ PAGES.planEdit = {
         editing: id,
       };
     }
-    return askForm(r.buddy, { back: "back", editing: true });
+    return askForm(r.buddy, { back: `#/plan/${id}`, editing: true });
   },
 };
 

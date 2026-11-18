@@ -5,9 +5,37 @@ const clock = (sec) =>
   `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
 
 /* Exercise GIF from Patient/assets/. If the file is missing, a plain box shows instead. */
-function exerciseGif(ex) {
-  return `<div class="media"><img src="assets/${ex.gif}" alt="${ex.name}, how to do it" onerror="this.parentElement.classList.add('is-missing')"><span class="media-missing">GIF coming soon</span></div>
+function exerciseGif(ex, easier = false) {
+  return `${easier ? '<p class="media-version-note">Shared movement demo · follow the Easier steps below.</p>' : ""}<div class="media"><img src="assets/${ex.gif}" alt="${ex.name}, movement demonstration" onerror="this.parentElement.classList.add('is-missing')"><span class="media-missing">GIF coming soon</span></div>
     <p class="media-credit">We don't own this GIF. Source: <a href="${ex.source.url}" target="_blank" rel="noopener">${ex.source.name}</a></p>`;
+}
+
+/* Repeat the easier adjustments already specified in the plan in the relevant
+   movement steps. Keep the prescribed sets, repetitions and holds unchanged. */
+function exerciseSteps(ex, easier) {
+  if (!easier) return ex.steps;
+  const steps = [...ex.steps];
+  switch (ex.id) {
+    case "wallsquat":
+      steps[1] = "Slide down slowly with a smaller bend in your knees.";
+      break;
+    case "bandrow":
+      steps[0] = "Sit with your legs straight and a light band around your feet.";
+      break;
+    case "farmer":
+      steps[0] = "Hold a lighter bag in each hand.";
+      steps[2] = "Breathe slowly and hold, or walk slowly, for 15 seconds.";
+      break;
+    case "calf":
+      steps[0] = "Stand with your feet hip width apart and hold a chair for balance.";
+      break;
+    case "hamstring":
+      steps[0] = "Lie on your back.";
+      steps[1] = "Lift one leg with your knee bent a little and hold it behind the thigh or with a strap.";
+      steps[2] = "Hold for 20 seconds, then switch sides.";
+      break;
+  }
+  return steps;
 }
 
 /* ---------- Timer ----------
@@ -34,7 +62,7 @@ function timerLabel(t) {
   if (t.running) return `${icon("pause")}<span>${clock(t.left)}</span>`;
   if (t.left < t.total)
     return `${icon("play")}<span>Resume · ${clock(t.left)}</span>`;
-  return `${icon("play")}<span>Start · ${clock(t.total)}</span>`;
+  return `${icon("play")}<span>Start timer · ${clock(t.total)}</span>`;
 }
 
 function drawTimer() {
@@ -204,14 +232,14 @@ PAGES.session = {
           "Exercise version",
         )}
         ${!ex.easier ? `<p class="field-hint center">Your PT didn't add an easier version for this one.</p>` : ""}
-        ${exerciseGif(ex)}
+        ${easier ? `<aside class="version-changes" aria-label="What changes in the easier version"><strong>Easier plan</strong><p>${esc(ex.easier)}</p><small>Standard: ${esc(ex.standard)}</small></aside>` : ""}
+        ${exerciseGif(ex, easier)}
         <div class="exercise-head"><h2>${ex.name}</h2></div>
         <p class="prescription">${easier ? ex.easier : ex.standard}</p>
-        ${easier ? '<p class="easier-note">Easier version for sore days.</p>' : ""}
-        <ol class="steps">${ex.steps.map((step) => `<li>${step}</li>`).join("")}</ol>
+        <ol class="steps">${exerciseSteps(ex, easier).map((step) => `<li>${step}</li>`).join("")}</ol>
       </div>
       <footer class="screen-footer"><p class="next-up">${next ? `Next up: ${next.name} · ${next.minutes} min` : "Next up: a quick check-in"}</p>
-        <div class="player-actions"><button type="button" class="button primary full timer-btn" data-action="timer-toggle"></button>${button("Done", { action: "next-exercise", style: "secondary", cls: "player-done" })}</div></footer>
+        <div class="player-actions"><button type="button" class="button primary full timer-btn" data-action="timer-toggle"></button>${button("Done", { action: "next-exercise", style: "secondary", cls: "player-done" })}</div><p class="timer-hint">Timer is a guide. Tap Done after your sets or holds.</p></footer>
     </section>`;
   },
   mount: mountPlayer,

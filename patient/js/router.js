@@ -40,9 +40,43 @@ const ROUTES = [
 const app = document.getElementById("app");
 let cleanups = [];
 const onCleanup = (fn) => cleanups.push(fn);
+let previousPath = null;
+let activePlanNavigation = null;
 
 function currentPath() {
   return location.hash.replace(/^#/, "") || "/home";
+}
+
+/* Plans can open from Home or a buddy profile. Keep that origin on the
+   history entry so reloading still returns inside the app. Direct links use Home. */
+function safePlanOrigin(path) {
+  if (path === "/home" || path === "/profile") return path;
+  const buddyMatch = typeof path === "string" && path.match(/^\/buddy\/([^/]+)$/);
+  if (buddyMatch && buddyById(buddyMatch[1])?.status === "active") return path;
+  return "/home";
+}
+
+function rememberPlanNavigation(page, id) {
+  if (page !== "plan" && page !== "planEdit") return;
+  const saved = history.state?.patientPlanNavigation;
+  const samePlan = previousPath === `/plan/${id}` || previousPath === `/plan/${id}/edit`;
+  const origin = saved?.id === id
+    ? saved.origin
+    : samePlan && activePlanNavigation?.id === id
+      ? activePlanNavigation.origin
+      : previousPath;
+  activePlanNavigation = { id, origin: safePlanOrigin(origin) };
+  history.replaceState(
+    { ...history.state, patientPlanNavigation: activePlanNavigation },
+    "",
+    location.href,
+  );
+}
+
+function planReturnPath(id) {
+  return activePlanNavigation?.id === id
+    ? safePlanOrigin(activePlanNavigation.origin)
+    : "/home";
 }
 
 function matchRoute(path) {
@@ -81,11 +115,14 @@ function render({ keepScroll = false } = {}) {
     go(redirect, { replace: true });
     return;
   }
+  rememberPlanNavigation(page, params.id);
+  previousPath = currentPath();
   const oldBody = $(".screen-body", app);
   const top = keepScroll && oldBody ? oldBody.scrollTop : 0;
   cleanups.forEach((fn) => fn());
   cleanups = [];
-  app.innerHTML = def.render(params) + (def.tab ? bottomNav(def.tab) : "");
+  const tab = typeof def.tab === "function" ? def.tab(params) : def.tab;
+  app.innerHTML = def.render(params) + (tab ? bottomNav(tab) : "");
   app.dataset.page = page;
   const body = $(".screen-body", app);
   if (body) body.scrollTop = top;

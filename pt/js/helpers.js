@@ -18,8 +18,6 @@ const newCount = (p) => p.updates.filter((u) => !state.reviewed[u.id]).length;
 const countKind = (p, k) => p.updates.filter((u) => u.kind === k).length;
 const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 
-/* Breadcrumbs: shows where you are, like "Patients › Maya Chen › Edit plan".
-   Each item is [label, link]. The last item has no link, because it's the page you're on. */
 function crumbs(items) {
   return `<nav class="crumbs" aria-label="You are here">${items
     .map(([label, href], i) =>

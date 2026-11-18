@@ -24,7 +24,7 @@ function pagePatient(p) {
   ${
     draft
       ? `<div class="notice draft-notice"><span><strong>Unpublished draft.</strong> ${esc(firstName(p))}'s plan stays the same until you publish.</span>
-    <span class="btn-row"><a class="btn small" href="#/patient/${p.id}/edit">Continue editing</a><button class="btn ghost small" data-action="cancel-draft" data-id="${p.id}">Cancel draft</button></span></div>`
+    <span class="btn-row"><a class="btn small" href="#/patient/${p.id}/edit">Continue editing</a><button class="btn ghost small" data-action="cancel-draft" data-id="${p.id}">Discard draft</button></span></div>`
       : ""
   }
 

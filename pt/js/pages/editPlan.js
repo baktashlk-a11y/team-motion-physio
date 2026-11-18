@@ -61,7 +61,7 @@ function pageEdit(p) {
 
   return `
   ${crumbs([["Patients", "#/patients"], [p.name, `#/patient/${p.id}`], ["Edit plan"]])}
-  <div class="page-head"><div><h1>Edit ${esc(firstName(p))}'s home plan</h1><p class="muted">Connect the plan to ${esc(firstName(p))}'s real life.</p></div></div>
+  <div class="page-head"><div><h1>Edit ${esc(firstName(p))}'s home plan</h1><p class="muted">Connect the plan to ${esc(firstName(p))}'s real life.</p></div><a class="btn ghost" href="#/patient/${p.id}">Back to ${esc(firstName(p))}</a></div>
   ${stepper(0, 0)}
   <div class="grid two">
     <section class="card">
@@ -127,7 +127,7 @@ function pageEdit(p) {
     </div>
   </div>
   <div class="bottom-bar">
-    <div class="btn-row"><button class="btn ghost" data-action="cancel-draft" data-id="${p.id}">Cancel draft</button><span class="muted small">${esc(firstName(p))}'s plan stays the same until you publish.</span></div>
+    <div class="btn-row"><button class="btn ghost" data-action="cancel-draft" data-id="${p.id}">Discard draft</button><span class="muted small">Draft saved in this browser. Plan unchanged until published.</span></div>
     <div class="btn-row"><button class="btn" data-action="go-preview" data-id="${p.id}" ${d.items.length === 0 ? "disabled" : ""}>Preview update</button></div>
   </div>`;
 }
