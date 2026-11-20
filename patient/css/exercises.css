@@ -49,11 +49,62 @@
   background: var(--card);
   text-align: left;
 }
-.exercise-row:hover:not(:disabled) {
+.exercise-row:hover:not(:disabled):not(.is-disabled) {
   border-color: var(--forest);
 }
-.exercise-row:disabled {
+.exercise-row:disabled,
+.exercise-row.is-disabled {
   opacity: 0.6;
+}
+.exercise-name-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+}
+.must-do-tag {
+  display: inline-block;
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-s);
+  background: var(--soft-green);
+  color: var(--forest);
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.exercise-choice {
+  cursor: pointer;
+}
+.exercise-choice.is-disabled {
+  cursor: default;
+}
+.exercise-choice input {
+  flex: 0 0 auto;
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--forest);
+}
+.selection-help {
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+}
+.selection-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+.selection-tools > div {
+  display: flex;
+}
+.selection-tools .text-button {
+  padding-right: 0.375rem;
+  padding-left: 0.375rem;
 }
 .exercise-label {
   display: flex;

@@ -9,8 +9,8 @@ function freshState() {
   return {
     completed: [], // exercise ids checked in this cycle
     checkins: [], // saved check-ins
-    session: null, // { ids, index, done, variants }
-    filter: "all", // "all" or "must"
+    session: null, // { ids, index, done, variants, returnTo }
+    workoutSelection: null, // null starts with unfinished exercises; [] means none selected
     draft: { feeling: "", discomfort: 0, note: "" },
     lastCheckin: null,
     moments: seedMoments(),
@@ -39,6 +39,9 @@ function loadState() {
       merged.completed = merged.completed.filter((id) =>
         EXERCISES.some((ex) => ex.id === id),
       );
+      merged.workoutSelection = Array.isArray(merged.workoutSelection)
+        ? EXERCISES.filter((ex) => merged.workoutSelection.includes(ex.id)).map((ex) => ex.id)
+        : null;
       return merged;
     }
   } catch {

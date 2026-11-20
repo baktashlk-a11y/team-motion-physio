@@ -108,32 +108,23 @@ function buddyCard() {
   </section>`;
 }
 
-/* The plan card keeps the same layout before and after Maya starts. */
+/* Open an exercise directly, or choose a group from Start workout. */
 function planCard() {
   const done = EXERCISES.filter((ex) => isDone(ex.id));
   const left = remaining();
   const pct = Math.round((done.length / EXERCISES.length) * 100);
-  let copy = `New plan from your PT. No rush, start whenever you're ready.`;
-  if (done.length && left.length)
-    copy = "Nice start! Pick up the rest whenever you're ready.";
+  let copy = "Tap an exercise to open it, or start a workout to choose a group.";
   if (!left.length)
-    copy = "Your plan is complete. Nice work making time for yourself.";
+    copy = "Your plan is complete. You can repeat an exercise or choose a group for another workout.";
+  if (state.session)
+    copy = "A workout is in progress. Resume it to continue where you left off.";
   if (state.pause) copy = `Paused by your PT. Rest until you talk.`;
 
-  let action = button(`Start exercises ${icon("chevron")}`, {
+  let action = button(`Start workout ${icon("chevron")}`, {
     href: "#/exercises",
   });
   if (state.session && !state.pause)
-    action = button(`Resume session ${icon("chevron")}`, { href: "#/session" });
-  else if (done.length && left.length)
-    action = button(`Continue · ${left.length} left ${icon("chevron")}`, {
-      href: "#/exercises",
-    });
-  else if (!left.length)
-    action = button("See this week's exercises", {
-      href: "#/exercises",
-      style: "secondary",
-    });
+    action = button(`Resume workout ${icon("chevron")}`, { href: "#/session" });
   if (state.pause)
     action = button(`${icon("lock")} Paused by your PT`, {
       style: "primary",
@@ -145,9 +136,12 @@ function planCard() {
     <p class="plan-copy">${copy}</p>
     <div class="plan-meter"><span class="meter-label"><strong>${done.length} of ${EXERCISES.length}</strong> done</span><span class="muted">about ${minutesOf(left)} min left</span></div>
     <div class="progress-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Plan progress"><span style="width:${pct}%"></span></div>
-    <ul class="plan-list">${EXERCISES.map(
+    <ul class="exercise-list home-exercise-list">${EXERCISES.map(
       (ex) =>
-        `<li class="plan-item ${isDone(ex.id) ? "done" : ""}"><span class="plan-name">${ex.name}</span><span class="plan-status">${isDone(ex.id) ? `${icon("check")} Done` : "Not started"}</span><span class="plan-min">${ex.minutes} min</span></li>`,
+        `<li><button type="button" class="exercise-row ${isDone(ex.id) ? "done" : ""}" data-action="open-exercise" data-id="${ex.id}" ${state.pause || state.session ? "disabled" : ""}>
+          <span class="exercise-label"><span class="exercise-name-line"><strong>${esc(ex.name)}</strong>${exerciseMustTag(ex)}</span><small>${ex.minutes} min${isDone(ex.id) ? ` · ${icon("check")} Done` : ""}</small></span>
+          ${icon("chevron", "row-chevron")}
+        </button></li>`,
     ).join("")}</ul>
     ${action}
   </section>`;

@@ -220,49 +220,8 @@
   background: var(--forest);
   transition: width 300ms ease;
 }
-.plan-list {
+.home-exercise-list {
   margin: 0.75rem 0 1rem;
-}
-.plan-item {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  min-height: 2.5rem;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.875rem;
-}
-.plan-item:last-child {
-  border-bottom: 0;
-}
-.plan-name {
-  flex: 1;
-  min-width: 0;
-}
-/* Plain status text keeps this summary from looking like a checklist control. */
-.plan-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  flex: 0 0 auto;
-  color: var(--text-secondary);
-  font-size: 0.75rem;
-}
-.plan-status .icon {
-  width: 0.875rem;
-  height: 0.875rem;
-}
-.plan-min {
-  min-width: 2.75rem;
-  color: var(--text-secondary);
-  font-size: 0.75rem;
-  text-align: right;
-}
-.plan-item.done .plan-name {
-  color: var(--text-secondary);
-}
-.plan-item.done .plan-status {
-  color: var(--forest);
-  font-weight: 600;
 }
 .status-dot {
   display: inline-flex;
@@ -284,7 +243,7 @@
   height: 0.875rem;
   stroke-width: 2.4;
 }
-.plan-card.is-paused .plan-list {
+.plan-card.is-paused .home-exercise-list {
   opacity: 0.55;
 }
 /* Buddy card under the plan */

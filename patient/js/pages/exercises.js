@@ -118,81 +118,116 @@ ACTIONS["timer-toggle"] = () => {
   drawTimer();
 };
 
-/* ---------- This week's exercises ---------- */
+/* ---------- Choose a workout ---------- */
 
-const selected = () =>
-  EXERCISES.filter((ex) => state.filter === "all" || ex.must);
+function exerciseMustTag(ex) {
+  return ex.must ? '<span class="must-do-tag">Must-do</span>' : "";
+}
+
+function workoutExercises() {
+  const ids = state.workoutSelection ?? remaining().map((ex) => ex.id);
+  return EXERCISES.filter((ex) => ids.includes(ex.id));
+}
 
 PAGES.exercises = {
   tab: "home",
   render() {
-    const items = selected();
-    const todo = items.filter((ex) => !isDone(ex.id));
+    if (!state.session && state.workoutSelection === null) {
+      state.workoutSelection = remaining().map((ex) => ex.id);
+      save();
+    }
+    const chosen = state.session
+      ? EXERCISES.filter((ex) => state.session.ids.includes(ex.id))
+      : workoutExercises();
     const doneCount = EXERCISES.filter((ex) => isDone(ex.id)).length;
-    const left = remaining();
+    const locked = !!(state.pause || state.session);
     let start = button(
-      `${icon("play")} Start ${state.filter === "must" ? "must-dos" : "all"} · ${minutesOf(todo)} min`,
-      { action: "start-all", attrs: todo.length ? "" : "disabled" },
+      `${icon("play")} Start workout${chosen.length ? ` · ${minutesOf(chosen)} min` : ""}`,
+      { action: "start-selected", attrs: chosen.length ? "" : "disabled" },
     );
     if (state.session)
-      start = button(
-        `Resume · exercise ${state.session.index + 1} of ${state.session.ids.length}`,
-        { href: "#/session" },
-      );
+      start = button("Resume workout", { href: "#/session" });
     if (state.pause)
       start = button(`${icon("lock")} Paused by your PT`, {
         attrs: "disabled",
       });
-    return `<section class="screen screen-list">${header(doneCount ? "Still to do" : "This week's exercises", "#/home", { sub: `Until your visit on ${fmtDay(nextVisit())} · about ${minutesOf(left)} min left` })}
+    return `<section class="screen screen-list">${header("Choose exercises", "#/home", { sub: "Pick the exercises you want in this workout." })}
       <div class="screen-body">
         ${state.pause ? `<a class="alert-strip" href="#/inbox/${(state.messages.find((m) => m.kind === "pause") || {}).id}">${icon("alert")}<span><strong>Paused by your PT.</strong> Please rest until you talk. Read message</span>${icon("chevron", "row-chevron")}</a>` : ""}
-        ${segmented(
-          "filter",
-          [
-            ["all", `All (${left.length})`],
-            ["must", `Must-dos only (${left.filter((ex) => ex.must).length})`],
-          ],
-          state.filter,
-          "Which exercises",
-        )}
-        ${state.filter === "must" ? `<aside class="backup-plan"><strong>Your PT's backup plan</strong><p>For busy or sore weeks. ${todo.length ? `These ${todo.length} are enough until your visit.` : "You've finished your must-dos."}</p></aside>` : ""}
-        <ul class="exercise-list">${items
+        ${state.session && !state.pause ? '<p class="selection-help">You have a workout in progress. Resume it before starting another.</p>' : '<p class="selection-help">Must-do tags mark your PT’s priorities for busy or sore weeks.</p>'}
+        <div class="selection-tools"><span>${chosen.length} of ${EXERCISES.length} selected</span><div><button type="button" class="text-button" data-action="select-all-exercises" ${locked ? "disabled" : ""}>Select all</button><button type="button" class="text-button" data-action="clear-exercises" ${locked ? "disabled" : ""}>Clear</button></div></div>
+        <ul class="exercise-list" aria-label="Exercises to include in your workout">${EXERCISES
           .map(
             (
               ex,
-            ) => `<li><button type="button" class="exercise-row ${isDone(ex.id) ? "done" : ""}" data-action="open-exercise" data-id="${ex.id}" ${state.pause || state.session ? "disabled" : ""}>
-              <span class="status-dot">${isDone(ex.id) ? icon("check") : ""}</span>
-              <span class="exercise-label"><strong>${ex.name}</strong><small>${ex.minutes} min${isDone(ex.id) ? " · Done" : ""}</small></span>
-              ${icon("chevron", "row-chevron")}
-            </button></li>`,
+            ) => `<li><label class="exercise-row exercise-choice ${isDone(ex.id) ? "done" : ""} ${locked ? "is-disabled" : ""}" for="workout-${ex.id}">
+              <input type="checkbox" id="workout-${ex.id}" data-exercise-id="${ex.id}" ${chosen.includes(ex) ? "checked" : ""} ${locked ? "disabled" : ""}>
+              <span class="exercise-label"><span class="exercise-name-line"><strong>${ex.name}</strong>${exerciseMustTag(ex)}</span><small>${ex.minutes} min${isDone(ex.id) ? ` · ${icon("check")} Done this plan` : ""}</small></span>
+            </label></li>`,
           )
           .join("")}</ul>
-        ${doneCount ? '<p class="field-hint center">Tap a done exercise to do it again.</p>' : ""}
+        ${doneCount ? '<p class="field-hint center">You can select a done exercise to do it again.</p>' : ""}
       </div>
-      <footer class="screen-footer">${start}</footer>
+      <footer class="screen-footer">${!locked ? `<p class="next-up" aria-live="polite">${chosen.length ? `${chosen.length} exercise${chosen.length === 1 ? "" : "s"} selected · about ${minutesOf(chosen)} min` : "Choose at least one exercise to start."}</p>` : ""}${start}</footer>
     </section>`;
   },
 };
 
-ACTIONS.filter = (el) => {
-  state.filter = el.dataset.value;
+function updateWorkoutSelection(el) {
+  if (state.pause || state.session || !exerciseById(el.dataset.exerciseId)) return;
+  const ids = new Set(workoutExercises().map((ex) => ex.id));
+  if (el.checked) ids.add(el.dataset.exerciseId);
+  else ids.delete(el.dataset.exerciseId);
+  state.workoutSelection = EXERCISES.filter((ex) => ids.has(ex.id)).map((ex) => ex.id);
   save();
   rerender();
-  $(`[data-action="filter"][data-value="${state.filter}"]`).focus();
+  $(`#${el.id}`)?.focus({ preventScroll: true });
+}
+
+/* Native checkbox input events support both tapping and the Space key. */
+EXERCISES.forEach((ex) => {
+  INPUTS[`workout-${ex.id}`] = updateWorkoutSelection;
+});
+
+function setWorkoutSelection(ids, action) {
+  if (state.pause || state.session) return;
+  state.workoutSelection = ids;
+  save();
+  rerender();
+  $(`[data-action="${action}"]`)?.focus({ preventScroll: true });
+}
+ACTIONS["select-all-exercises"] = () => {
+  setWorkoutSelection(EXERCISES.map((ex) => ex.id), "select-all-exercises");
+};
+ACTIONS["clear-exercises"] = () => {
+  setWorkoutSelection([], "clear-exercises");
 };
 
-function startSession(ids) {
-  state.session = { ids, index: 0, done: [], variants: {} };
+function sessionReturnPath(session = state.session) {
+  return session?.returnTo === "/home" ? "/home" : "/exercises";
+}
+
+function startSession(ids, returnTo = "/exercises") {
+  if (state.pause) return;
+  if (state.session) {
+    go("/session");
+    return;
+  }
+  const validIds = EXERCISES.filter((ex) => Array.isArray(ids) && ids.includes(ex.id)).map((ex) => ex.id);
+  if (!validIds.length) return;
+  if (timer) clearInterval(timer.id);
+  timer = null;
+  state.session = { ids: validIds, index: 0, done: [], variants: {}, returnTo: sessionReturnPath({ returnTo }) };
+  state.workoutSelection = null;
   state.draft = { feeling: "", discomfort: 0, note: "" };
   save();
   go("/session");
 }
-ACTIONS["start-all"] = () => {
-  const todo = selected().filter((ex) => !isDone(ex.id));
-  if (todo.length && !state.pause) startSession(todo.map((ex) => ex.id));
+ACTIONS["start-selected"] = () => {
+  startSession(workoutExercises().map((ex) => ex.id));
 };
 ACTIONS["open-exercise"] = (el) => {
-  if (!state.pause) startSession([el.dataset.id]);
+  startSession([el.dataset.id], "/home");
 };
 
 /* ---------- Player ---------- */
@@ -266,7 +301,7 @@ function advance(markDone) {
   if (!s.done.length) {
     state.session = null;
     save();
-    go("/exercises", { replace: true });
+    go(sessionReturnPath(s), { replace: true });
     toast("Session ended. Nothing was skipped for good.");
     return;
   }
@@ -288,7 +323,7 @@ ACTIONS["leave-session"] = () => {
     } else {
       state.session = null;
       save();
-      go("/exercises", { replace: true });
+      go(sessionReturnPath(s), { replace: true });
     }
   };
   const n = s.done.length;
@@ -340,6 +375,7 @@ PAGES.checkin = {
 
 ACTIONS["leave-checkin"] = () => {
   const n = state.session.done.length;
+  const returnTo = sessionReturnPath();
   openModal({
     title: "Leave without saving?",
     text: `Your ${n} exercise${n === 1 ? "" : "s"} won't be marked as done.`,
@@ -349,7 +385,7 @@ ACTIONS["leave-checkin"] = () => {
       state.session = null;
       state.draft = { feeling: "", discomfort: 0, note: "" };
       save();
-      go("/exercises", { replace: true });
+      go(returnTo, { replace: true });
     },
   });
 };
