@@ -31,6 +31,11 @@ const ICON_PATHS = {
   profile:
     '<circle cx="12" cy="8" r="4"/><path d="M5 22v-3a7 7 0 0 1 14 0v3"/>',
   check: '<path d="m5 12 4 4L20 5"/>',
+  raiseHand:
+    '<path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8a8 8 0 0 0 8 8h1a7 7 0 0 0 7-7v-3a2 2 0 0 0-4 0"/>',
+  arrowDown: '<path d="M12 5v14M6 13l6 6 6-6"/>',
+  arrowUp: '<path d="M12 19V5M6 11l6-6 6 6"/>',
+  hand: '<path d="M9 11V5a1.5 1.5 0 0 1 3 0v5M12 10V4a1.5 1.5 0 0 1 3 0v6M15 10V6a1.5 1.5 0 0 1 3 0v7a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-2.7L3.5 13a1.5 1.5 0 0 1 2.4-1.8L9 14"/>',
   play: '<path d="m8 5 11 7-11 7Z" fill="currentColor" stroke="none"/>',
   pause: '<path d="M8 5v14M16 5v14" stroke-width="2.6"/>',
   replay: '<path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4"/>',
@@ -211,7 +216,8 @@ let modalCancel = null;
 let modalReturnFocus = null;
 
 /* onCancel runs only when the second button is tapped, not when the pop-up is closed. */
-/* dismiss adds a third, quiet button that just closes the pop-up. */
+/* dismiss adds a third, quiet button that just closes the pop-up.
+   cancel: "" shows only one button. center: true puts the card in the middle of the screen. */
 function openModal({
   title,
   text,
@@ -219,6 +225,7 @@ function openModal({
   style = "primary",
   cancel = "Cancel",
   dismiss = "",
+  center = false,
   onConfirm,
   onCancel,
 }) {
@@ -227,9 +234,9 @@ function openModal({
   modalReturnFocus = document.activeElement;
   $("#overlay-root").innerHTML =
     `<div class="modal-backdrop" data-action="modal-cancel"></div>
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal ${center ? "is-center" : ""}" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <h2 id="modal-title">${title}</h2>${text ? `<p class="muted">${text}</p>` : ""}
-      <div class="modal-actions">${button(confirm, { action: "modal-confirm", style })}${button(cancel, { action: "modal-second", style: "secondary" })}${dismiss ? button(dismiss, { action: "modal-cancel", style: "quiet" }) : ""}</div>
+      <div class="modal-actions">${button(confirm, { action: "modal-confirm", style })}${cancel ? button(cancel, { action: "modal-second", style: "secondary" }) : ""}${dismiss ? button(dismiss, { action: "modal-cancel", style: "quiet" }) : ""}</div>
     </div>`;
   $(".modal [data-action='modal-confirm']").focus({ preventScroll: true });
 }

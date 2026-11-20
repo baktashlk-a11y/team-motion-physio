@@ -130,9 +130,68 @@
   stroke: var(--line);
   stroke-width: 2.5;
 }
-.chart-value {
+/* Interactive chart: a cursor line, a bigger dot and the numbers above follow the tap */
+.comfort-chart {
+  cursor: pointer;
+  touch-action: pan-y;
+}
+.comfort-chart:focus {
+  outline: none;
+}
+.comfort-chart:focus-visible {
+  outline: 0.125rem solid var(--beige);
+  outline-offset: 0.25rem;
+  border-radius: var(--radius-s);
+}
+.chart-hit {
+  fill: transparent;
+}
+.chart-cursor {
+  stroke: var(--beige);
+  stroke-width: 1.25;
+  stroke-dasharray: 3 3;
+}
+.chart-dot {
+  transition: r 150ms ease;
+}
+.chart-dot.is-active {
+  fill: var(--beige);
+  stroke: var(--line);
+  stroke-width: 2.5;
+}
+.chart-dates text.is-active {
   fill: var(--line);
-  font: 700 13px var(--font-body) !important;
+  font-weight: 700;
+}
+.chart-readout {
+  min-height: 3.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.readout-value {
+  font: 700 1.875rem/1 var(--font-body);
+  letter-spacing: -0.02em;
+}
+.readout-value small {
+  margin-left: 0.125rem;
+  color: #ffffffb3;
+  font: 500 0.875rem var(--font-body);
+}
+
+.readout-meta {
+  margin-top: 0.375rem;
+  color: #ffffffcc;
+  font-size: 0.8125rem;
+}
+.readout-meta a {
+  display: inline-flex;
+  align-items: center;
+  color: var(--beige);
+  font-weight: 600;
+}
+.readout-meta a .icon {
+  width: 0.875rem;
+  height: 0.875rem;
 }
 
 /* Visit reminder */
@@ -188,27 +247,52 @@
   font-size: 0.6875rem;
   font-weight: 600;
 }
-.plan-copy {
-  margin: 0.5rem 0 0.875rem;
-  color: var(--text-secondary);
-  font-size: 0.8125rem;
-  line-height: 1.55;
+/* Must-do message: the core idea, always visible on Home */
+.must-message {
+  display: flex;
+  gap: 0.625rem;
+  align-items: flex-start;
+  margin: 0.75rem 0 1rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--radius);
+  background: var(--soft-green);
+  color: var(--forest);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.must-message strong {
+  display: block;
+}
+.must-message .icon {
+  flex: 0 0 auto;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.125rem;
+}
+.plan-card.is-paused .must-message {
+  background: var(--alert-light);
+  color: var(--alert);
+}
+/* Two progress rows: must-dos (strong) and all exercises (lighter) */
+.plan-meter-row {
+  margin-bottom: 0.875rem;
 }
 .plan-meter {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   margin-bottom: 0.375rem;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
 }
-.meter-label strong {
+.meter-label {
+  font-weight: 600;
+}
+.meter-count strong {
   color: var(--forest);
-}
-.plan-meter .muted {
-  font-size: 0.75rem;
+  font-size: 1rem;
 }
 .progress-bar {
-  height: 0.5rem;
+  height: 0.625rem;
   overflow: hidden;
   border-radius: 1rem;
   background: #e6ebe7;
@@ -219,6 +303,25 @@
   border-radius: 1rem;
   background: var(--forest);
   transition: width 300ms ease;
+}
+.plan-meter-row:not(.is-must) .progress-bar span {
+  background: #6f9a85;
+}
+.meter-time {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.3125rem;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+.meter-time .icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--forest);
+}
+.plan-card > .button {
+  margin-top: 0.25rem;
 }
 .home-exercise-list {
   margin: 0.75rem 0 1rem;
@@ -243,43 +346,29 @@
   height: 0.875rem;
   stroke-width: 2.4;
 }
-.plan-card.is-paused .home-exercise-list {
+.plan-card.is-paused .plan-meter-row {
   opacity: 0.55;
 }
-/* Buddy card under the plan */
-.buddy-card {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+/* Buddy card: plans on top, two actions in a bottom row inside the card */
+.buddy-box {
   margin-top: 0.75rem;
-  padding: 0.875rem 1rem;
-  border: 1px solid var(--border-strong, var(--border));
-  border-radius: var(--radius-l);
-  background: var(--card);
-  text-decoration: none;
+  padding: 0;
+  overflow: hidden;
 }
-.buddy-card .row-text strong {
-  font-size: 0.875rem;
+.buddy-box-body {
+  padding: 1rem 1rem 0.5rem;
 }
-.buddy-card .status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-.buddy-card .status-pill .icon {
-  width: 0.75rem;
-  height: 0.75rem;
-}
-/* Plans with buddies, same card style as the plan card */
-.buddy-plans {
-  margin-top: 0.75rem;
-  padding: 1rem 1rem 0.25rem;
-}
-.buddy-plans .card-heading h2 {
+.buddy-box .card-heading h2 {
   font-size: 1.1875rem;
 }
-.buddy-plans ul {
-  margin-top: 0.5rem;
+.buddy-empty {
+  margin: 0.5rem 0 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+.buddy-plan-list {
+  margin-top: 0.375rem;
 }
 .buddy-plan {
   display: flex;
@@ -290,22 +379,43 @@
   border-bottom: 1px solid var(--border);
   text-decoration: none;
 }
+.buddy-plan-list li:last-child .buddy-plan {
+  border-bottom: 0;
+}
 .buddy-plan .row-text strong {
   font-weight: 500;
 }
 .buddy-plan.is-waiting .row-text strong {
   color: var(--text-secondary);
 }
-.buddy-plans li:last-child .buddy-plan {
-  border-bottom: 0;
+.buddy-actions {
+  display: flex;
+  border-top: 1px solid var(--border);
 }
-/* Plain + next to the title. The icon is small, but the tap area stays 2.75rem. */
-.add-plan {
-  margin: -0.625rem -0.625rem -0.625rem 0;
+.buddy-action {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  min-height: 3rem;
+  padding: 0 0.5rem;
+  color: var(--forest);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
 }
-.add-plan .icon {
-  width: 1.375rem;
-  height: 1.375rem;
+.buddy-action + .buddy-action {
+  border-left: 1px solid var(--border);
+}
+.buddy-action:hover {
+  background: #f1f5f2;
+}
+.buddy-action .icon {
+  flex: 0 0 auto;
+  width: 1.125rem;
+  height: 1.125rem;
   stroke-width: 2;
 }
 .section-caption {
@@ -396,4 +506,140 @@
 .message-card .alert-heading {
   margin-bottom: 0.625rem;
   font-size: 0.8125rem;
+}
+
+/* Home goal card: a calm summary. Big score on the left, a small trend line on the right. */
+.goal-card {
+  padding: 1.25rem;
+}
+.goal-card .eyebrow {
+  display: block;
+  margin-bottom: 0.375rem;
+  color: #d6e7dc;
+}
+.goal-card h2 {
+  max-width: 18rem;
+  font-size: 1.375rem;
+  line-height: 1.25;
+}
+
+/* Home chart area: label, big number, chart. Space between each part so nothing feels packed. */
+.goal-chart-area {
+  margin-top: 1.25rem;
+  padding-top: 1.125rem;
+  border-top: 1px solid #ffffff26;
+}
+.goal-stat-label {
+  margin-bottom: 0.375rem;
+  color: #ffffffcc;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.chart-readout {
+  min-height: 0;
+  margin-bottom: 0.875rem;
+}
+/* Small label at the top of the dashed line, like a stock chart */
+.chart-tipbox rect {
+  fill: var(--beige);
+}
+.chart-tipbox text {
+  fill: var(--forest);
+  font: 700 10px var(--font-body) !important;
+}
+
+/* "How hard it feels" on the left, "See progress" on the right */
+.goal-chart-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+.goal-chart-head .goal-stat-label {
+  margin: 0;
+}
+.goal-progress-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.goal-progress-link .icon {
+  width: 1rem;
+  height: 1rem;
+}
+.goal-chart-area .chart-legend {
+  margin: 0.25rem 0 0.875rem;
+  font-size: 0.875rem;
+}
+/* Big number, then one quiet line: change since last visit and the date */
+.readout-value {
+  display: block;
+}
+.readout-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 0.25rem;
+}
+.readout-meta .is-better,
+.readout-meta .is-worse {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  font-weight: 600;
+}
+.readout-meta .is-better {
+  color: var(--beige);
+}
+.readout-meta .is-worse {
+  color: #f3c3b5;
+}
+.readout-meta .icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+.readout-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+.readout-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.readout-link .icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* "My goal" on the left, "See progress" on the right, at the top of the card */
+.goal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.375rem;
+}
+.goal-top .eyebrow {
+  margin: 0;
+}
+.goal-top .goal-progress-link {
+  font-size: 0.75rem;
+}
+.goal-chart-area .goal-stat-label {
+  margin-bottom: 0.125rem;
+}
+/* The change line is quieter than the scale legend */
+.readout-meta {
+  font-size: 0.75rem;
 }

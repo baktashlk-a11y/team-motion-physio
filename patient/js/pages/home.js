@@ -8,44 +8,152 @@ function greetingWord() {
   return "Good evening";
 }
 
-/* Goal chart. Each dot is the score Maya and her PT rated at a visit.
-   Used on Home (dark card) and on Progress (light card). */
-function goalChart(label = "Goal chart") {
-  const points = VISITS.map((v) => ({ date: visitDate(v), value: v.comfort }));
-  const left = 30;
-  const right = 268;
-  const top = 12;
-  const bottom = 112;
-  const y = (v) => bottom - (v / 10) * (bottom - top);
-  const x = (i) => left + (i * (right - left)) / Math.max(points.length - 1, 1);
-  const line = points.map((p, i) => `${x(i)},${y(p.value)}`).join(" ");
-  const last = points[points.length - 1];
-  const goalY = y(PATIENT.goalTarget);
-  const summary = points
-    .map((p) => `${fmtShort(p.date)}: ${p.value}`)
-    .join(", ");
-  return `<svg class="comfort-chart" viewBox="0 0 300 136" role="img" aria-label="${label}. ${summary}. Goal: ${PATIENT.goalTarget} out of 10.">
-    <g class="chart-grid">${[0, 5, 10].map((v) => `<path d="M${left} ${y(v)}H${right + 10}"/>`).join("")}</g>
-    <g class="chart-axis">${[0, 5, 10].map((v) => `<text x="${left - 8}" y="${y(v) + 3.5}" text-anchor="end">${v}</text>`).join("")}</g>
-    <path class="chart-goal" d="M${left} ${goalY}H${right + 10}"/>
-    <text class="chart-goal-label" x="${left + 4}" y="${goalY - 5}">Goal ${PATIENT.goalTarget}</text>
+/* Goal chart. Each dot is how hard the goal felt at a visit (0 = easy, 10 = very hard).
+   Lower is better, like the discomfort scale. Used on Home and on Progress.
+   It works like a stock chart: tap or slide along it. A dashed line follows the finger,
+   a small label at its top shows that visit, and the big number above updates. */
+const CHART = { left: 26, right: 284, top: 30, bottom: 112, height: 134 };
+const chartY = (v) => CHART.bottom - (v / 10) * (CHART.bottom - CHART.top);
+const chartX = (i) =>
+  CHART.left +
+  (i * (CHART.right - CHART.left)) / Math.max(VISITS.length - 1, 1);
+const tipText = (i) =>
+  `${VISITS[i].hard}/10 · ${fmtShort(visitDate(VISITS[i]))}`;
+
+/* Label on the dashed goal line: the target score. Lower is easier. */
+function goalLabel() {
+  const left = VISITS[VISITS.length - 1].hard - PATIENT.goalTarget;
+  if (left <= 0) return `Goal reached: ${PATIENT.goalTarget} or lower`;
+  return `Goal: get down to ${PATIENT.goalTarget}`;
+}
+
+function goalChart(label) {
+  const last = VISITS.length - 1;
+  const line = VISITS.map((v, i) => `${chartX(i)},${chartY(v.hard)}`).join(" ");
+  const goalY = chartY(PATIENT.goalTarget);
+  const summary = VISITS.map(
+    (v) => `${fmtShort(visitDate(v))}: ${v.hard}`,
+  ).join(", ");
+  return `<svg class="comfort-chart" viewBox="0 0 300 ${CHART.height}" role="slider" tabindex="0" aria-label="${label}. ${summary}. Goal: ${PATIENT.goalTarget} or lower. Use the arrow keys to move between visits." aria-valuemin="1" aria-valuemax="${VISITS.length}" aria-valuenow="${VISITS.length}" data-goal-chart>
+    <g class="chart-grid">${[0, 5, 10].map((v) => `<path d="M${CHART.left} ${chartY(v)}H${CHART.right}"/>`).join("")}</g>
+    <g class="chart-axis">${[0, 5, 10].map((v) => `<text x="${CHART.left - 8}" y="${chartY(v) + 3.5}" text-anchor="end">${v}</text>`).join("")}</g>
+    <path class="chart-goal" d="M${CHART.left} ${goalY}H${CHART.right}"/>
+    <text class="chart-goal-label" x="${CHART.left + 4}" y="${goalY - 5}">${goalLabel()}</text>
+    <line class="chart-cursor" x1="${chartX(last)}" x2="${chartX(last)}" y1="${CHART.top - 6}" y2="${CHART.bottom}"/>
     <polyline class="chart-line" points="${line}"/>
-    ${points.map((p, i) => `<circle class="chart-dot ${p === last ? "now" : ""}" cx="${x(i)}" cy="${y(p.value)}" r="${p === last ? 6 : 4.5}"/>`).join("")}
-    <text class="chart-value" x="${x(points.length - 1) - 12}" y="${y(last.value) + 4.5}" text-anchor="end">${last.value}</text>
-    <g class="chart-axis">${points.map((p, i) => `<text x="${x(i)}" y="130" text-anchor="${i === 0 ? "start" : i === points.length - 1 ? "end" : "middle"}" ${i === 0 ? `dx="-4"` : i === points.length - 1 ? `dx="6"` : ""}>${fmtShort(p.date)}</text>`).join("")}</g>
+    ${VISITS.map((v, i) => `<circle class="chart-dot ${i === last ? "is-active" : ""}" data-i="${i}" cx="${chartX(i)}" cy="${chartY(v.hard)}" r="${i === last ? 6 : 4}"/>`).join("")}
+    <g class="chart-axis chart-dates">${VISITS.map((v, i) => `<text data-i="${i}" class="${i === last ? "is-active" : ""}" x="${chartX(i)}" y="${CHART.height - 4}" text-anchor="${i === 0 ? "start" : i === last ? "end" : "middle"}" ${i === 0 ? `dx="-6"` : i === last ? `dx="6"` : ""}>${fmtShort(visitDate(v))}</text>`).join("")}</g>
+    <g class="chart-tipbox"><rect rx="4" ry="4" height="18"/><text y="12.5" text-anchor="middle">${tipText(last)}</text></g>
+    <rect class="chart-hit" x="0" y="0" width="300" height="${CHART.height}"/>
   </svg>`;
 }
 
+/* Place the small label at the top of the dashed line, kept inside the chart. */
+function placeTip(svg, i) {
+  const box = $(".chart-tipbox", svg);
+  const text = $("text", box);
+  text.textContent = tipText(i);
+  const w =
+    (text.getComputedTextLength ? text.getComputedTextLength() : 50) + 14;
+  const cx = Math.min(Math.max(chartX(i), w / 2 + 2), 300 - w / 2 - 2);
+  const rect = $("rect", box);
+  rect.setAttribute("width", w);
+  rect.setAttribute("x", cx - w / 2);
+  rect.setAttribute("y", 0);
+  text.setAttribute("x", cx);
+}
+
+/* The big number above the chart: score, change since the visit before, and the date. */
+function chartReadout(i, withLink) {
+  const v = VISITS[i];
+  const before = VISITS[i - 1];
+  const isLast = i === VISITS.length - 1;
+  let change = "First visit";
+  if (before) {
+    const diff = v.hard - before.hard;
+    change =
+      diff < 0
+        ? `<span class="is-better">${icon("arrowDown")} ${-diff} ${-diff === 1 ? "point" : "points"} easier than last visit</span>`
+        : diff > 0
+          ? `<span class="is-worse">${icon("arrowUp")} ${diff} ${diff === 1 ? "point" : "points"} harder than last visit</span>`
+          : "Same as last visit";
+  }
+  return `<div class="readout-row"><strong class="readout-value">${v.hard}<small>/10</small></strong>${withLink ? `<a class="readout-link" href="#/visit/${v.id}">See visit ${icon("chevron")}</a>` : ""}</div>
+    <p class="readout-meta">${change} · ${fmtShort(visitDate(v))}${isLast ? " (latest)" : ""}</p>`;
+}
+
+function chartBlock(label, withLink = false) {
+  return `<div class="chart-block" data-link="${withLink ? "1" : ""}">
+    <div class="chart-readout" aria-live="polite">${chartReadout(VISITS.length - 1, withLink)}</div>
+    ${goalChart(label)}
+  </div>`;
+}
+
+/* Make every chart on the screen respond to taps, drags and arrow keys. */
+function mountGoalCharts() {
+  $$("[data-goal-chart]", app).forEach((svg) => {
+    const block = svg.closest(".chart-block");
+    const withLink = block.dataset.link === "1";
+    let current = VISITS.length - 1;
+    placeTip(svg, current);
+    const select = (i) => {
+      i = Math.max(0, Math.min(VISITS.length - 1, i));
+      if (i === current) return;
+      current = i;
+      const cursor = $(".chart-cursor", svg);
+      cursor.setAttribute("x1", chartX(i));
+      cursor.setAttribute("x2", chartX(i));
+      $$(".chart-dot", svg).forEach((dot) => {
+        const on = Number(dot.dataset.i) === i;
+        dot.classList.toggle("is-active", on);
+        dot.setAttribute("r", on ? 6 : 4);
+      });
+      $$(".chart-dates text", svg).forEach((t) =>
+        t.classList.toggle("is-active", Number(t.dataset.i) === i),
+      );
+      placeTip(svg, i);
+      svg.setAttribute("aria-valuenow", i + 1);
+      $(".chart-readout", block).innerHTML = chartReadout(i, withLink);
+    };
+    const fromPointer = (event) => {
+      const box = svg.getBoundingClientRect();
+      const x = ((event.clientX - box.left) / box.width) * 300;
+      let best = 0;
+      VISITS.forEach((_, i) => {
+        if (Math.abs(chartX(i) - x) < Math.abs(chartX(best) - x)) best = i;
+      });
+      select(best);
+    };
+    svg.addEventListener("pointerdown", (event) => {
+      svg.setPointerCapture(event.pointerId);
+      fromPointer(event);
+    });
+    svg.addEventListener("pointermove", (event) => {
+      if (
+        event.pointerType === "mouse" ||
+        svg.hasPointerCapture(event.pointerId)
+      )
+        fromPointer(event);
+    });
+    svg.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") select(current - 1);
+      else if (event.key === "ArrowRight") select(current + 1);
+      else return;
+      event.preventDefault();
+    });
+  });
+}
+
+/* Home goal card: the goal, then "How hard it feels" with the scale and a link to Progress, then the interactive chart. */
 function goalCard() {
-  const first = VISITS[0];
-  const last = VISITS[VISITS.length - 1];
   return `<section class="goal-card" aria-labelledby="goal-title">
-    <div class="goal-heading"><span class="eyebrow">My goal</span></div>
+    <div class="goal-top"><span class="eyebrow">My goal</span><a class="goal-progress-link" href="#/progress">See progress ${icon("chevron")}</a></div>
     <h2 id="goal-title">${esc(PATIENT.goal)}</h2>
-    <p class="chart-question">${esc(PATIENT.goalQuestion)}</p>
-    <p class="chart-legend"><strong>0</strong> = very hard · <strong>10</strong> = easy</p>
-    ${goalChart("How easy carrying your daughter feels, rated at each visit")}
-    <p class="goal-caption">Your comfort went up <strong>${last.comfort - first.comfort} points</strong> since ${fmtMonth(visitDate(first))}.</p>
+    <div class="goal-chart-area">
+      <p class="goal-stat-label">How hard it feels</p>
+      <p class="chart-legend"><strong>0</strong> = easy · <strong>10</strong> = very hard</p>
+      ${chartBlock("How hard carrying your daughter feels, rated at each visit")}
+    </div>
   </section>`;
 }
 
@@ -76,21 +184,21 @@ function visitReminder() {
   </a>`;
 }
 
-/* Buddy card: plans with buddies, so the feature is easy to find.
-   No plans yet: a "Busy week?" prompt. With plans: a short list. + asks any buddy, a plan row opens that plan. */
+/* Buddy card: one card for everything buddy-related on Home.
+   Top: plans with buddies (or a short prompt if there are none).
+   Bottom row, inside the card: "Request a favor" and "Add a buddy", side by side. */
 function buddyCard() {
   const active = state.buddies.filter((b) => b.status === "active");
-  if (!active.length)
-    return `<a class="buddy-card" href="#/buddy/add"><span class="row-icon">${icon("heart")}</span><span class="row-text"><strong>Get a hand from someone you trust</strong><small>Add a recovery buddy</small></span>${icon("chevron", "row-chevron")}</a>`;
   const plans = state.requests
     .filter((r) => buddyById(r.buddy) && new Date(r.day) >= daysFromToday(-1))
     .sort((a, b) => a.day.localeCompare(b.day))
     .slice(0, 2);
-  if (!plans.length)
-    return `<a class="buddy-card" href="#/ask"><span class="row-icon">${icon("heart")}</span><span class="row-text"><strong>Busy week?</strong><small>Ask a buddy to cover a chore so you have time</small></span>${icon("chevron", "row-chevron")}</a>`;
-  return `<section class="card buddy-plans" aria-labelledby="buddy-title">
-    <div class="card-heading"><h2 id="buddy-title">Plans with your buddies</h2><a class="icon-button add-plan" href="#/ask" aria-label="Ask a buddy for a hand">${icon("plus")}</a></div>
-    <ul>${plans
+
+  let body = `<p class="buddy-empty">Busy week? Ask a buddy to cover a chore, so you have time for your exercises.</p>`;
+  if (!active.length)
+    body = `<p class="buddy-empty">Recovery is easier with help. Add someone you trust, like a partner or a friend.</p>`;
+  if (active.length && plans.length)
+    body = `<ul class="buddy-plan-list">${plans
       .map((r) => {
         const b = buddyById(r.buddy);
         const what =
@@ -104,45 +212,66 @@ function buddyCard() {
             : `Asked ${esc(b.name)} · no reply yet`;
         return `<li><a class="buddy-plan ${r.status === "yes" ? "" : "is-waiting"}" href="#/plan/${r.id}">${avatar(b.name, r.status === "yes" ? "" : "pending")}<span class="row-text"><strong>${what}</strong><small>${sub}</small></span>${icon("chevron", "row-chevron")}</a></li>`;
       })
-      .join("")}</ul>
+      .join("")}</ul>`;
+
+  const actions = active.length
+    ? `<a class="buddy-action" href="#/ask">${icon("raiseHand")}<span>${plans.length ? "Request another favor" : "Request a favor"}</span></a><a class="buddy-action" href="#/buddy/add">${icon("plus")}<span>Add a buddy</span></a>`
+    : `<a class="buddy-action" href="#/buddy/add">${icon("plus")}<span>Add a buddy</span></a>`;
+
+  return `<section class="card buddy-box" aria-labelledby="buddy-title">
+    <div class="buddy-box-body">
+      <div class="card-heading"><h2 id="buddy-title">${plans.length && active.length ? "Plans with your buddies" : "Recovery buddies"}</h2></div>
+      ${body}
+    </div>
+    <div class="buddy-actions">${actions}</div>
   </section>`;
 }
 
-/* Open an exercise directly, or choose a group from Start workout. */
-function planCard() {
-  const done = EXERCISES.filter((ex) => isDone(ex.id));
-  const left = remaining();
-  const pct = Math.round((done.length / EXERCISES.length) * 100);
-  let copy = "Tap an exercise to open it, or start a workout to choose a group.";
-  if (!left.length)
-    copy = "Your plan is complete. You can repeat an exercise or choose a group for another workout.";
-  if (state.session)
-    copy = "A workout is in progress. Resume it to continue where you left off.";
-  if (state.pause) copy = `Paused by your PT. Rest until you talk.`;
+/* One progress row: label, "1 of 3 done", minutes left and a bar that fills up. */
+function planMeter(label, list, cls = "") {
+  const done = list.filter((ex) => isDone(ex.id));
+  const left = list.filter((ex) => !isDone(ex.id));
+  const pct = Math.round((done.length / list.length) * 100);
+  return `<div class="plan-meter-row ${cls}">
+    <div class="plan-meter"><span class="meter-label">${label}</span><span class="meter-count"><strong>${done.length} of ${list.length}</strong> done</span></div>
+    <div class="progress-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${label}: ${done.length} of ${list.length} done"><span style="width:${pct}%"></span></div>
+    <p class="meter-time">${left.length ? `About ${minutesOf(left)} min to finish` : `${icon("check")} All done`}</p>
+  </div>`;
+}
 
-  let action = button(`Start workout ${icon("chevron")}`, {
-    href: "#/exercises",
-  });
+/* Plan card: no exercise list here. It shows how far Maya is, how long is left,
+   and that the must-dos alone count as this week's progress. The list opens on the next page. */
+function planCard() {
+  const must = EXERCISES.filter((ex) => ex.must);
+  const mustLeft = must.filter((ex) => !isDone(ex.id));
+  const left = remaining();
+  const anyDone = left.length < EXERCISES.length;
+
+  let message = `<strong>Tired or busy this week?</strong> Finishing just your ${must.length} must-dos counts as this week's progress.`;
+  if (!mustLeft.length)
+    message = `<strong>Your must-dos are done.</strong> This week counts. Anything else is a bonus.`;
+  if (!left.length)
+    message = `<strong>Your whole plan is done.</strong> Great work this week.`;
+
+  let action = button(
+    `${anyDone ? "Continue exercises" : "Start exercises"} ${icon("chevron")}`,
+    { href: "#/exercises" },
+  );
+  if (!left.length)
+    action = button(`See exercises ${icon("chevron")}`, {
+      href: "#/exercises",
+      style: "secondary",
+    });
   if (state.session && !state.pause)
     action = button(`Resume workout ${icon("chevron")}`, { href: "#/session" });
   if (state.pause)
-    action = button(`${icon("lock")} Paused by your PT`, {
-      style: "primary",
-      attrs: "disabled",
-    });
+    action = button(`${icon("lock")} Paused by your PT`, { attrs: "disabled" });
 
   return `<section class="card plan-card ${state.pause ? "is-paused" : ""}" aria-labelledby="plan-title">
     <div class="card-heading"><h2 id="plan-title">Until your next visit</h2><span class="date-chip">${fmtDay(nextVisit())}</span></div>
-    <p class="plan-copy">${copy}</p>
-    <div class="plan-meter"><span class="meter-label"><strong>${done.length} of ${EXERCISES.length}</strong> done</span><span class="muted">about ${minutesOf(left)} min left</span></div>
-    <div class="progress-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Plan progress"><span style="width:${pct}%"></span></div>
-    <ul class="exercise-list home-exercise-list">${EXERCISES.map(
-      (ex) =>
-        `<li><button type="button" class="exercise-row ${isDone(ex.id) ? "done" : ""}" data-action="open-exercise" data-id="${ex.id}" ${state.pause || state.session ? "disabled" : ""}>
-          <span class="exercise-label"><span class="exercise-name-line"><strong>${esc(ex.name)}</strong>${exerciseMustTag(ex)}</span><small>${ex.minutes} min${isDone(ex.id) ? ` · ${icon("check")} Done` : ""}</small></span>
-          ${icon("chevron", "row-chevron")}
-        </button></li>`,
-    ).join("")}</ul>
+    <p class="must-message ${mustLeft.length ? "" : "is-done"}">${icon(mustLeft.length ? "heart" : "check")}<span>${state.pause ? "<strong>Paused by your PT.</strong> Rest until you talk." : message}</span></p>
+    ${planMeter("Must-dos", must, "is-must")}
+    ${planMeter("All exercises", EXERCISES)}
     ${action}
   </section>`;
 }
@@ -165,6 +294,7 @@ PAGES.home = {
       </div>
     </section>`;
   },
+  mount: mountGoalCharts,
 };
 
 /* ---------- Visit prep: opened from the Home reminder or Progress ---------- */

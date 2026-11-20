@@ -128,8 +128,59 @@
   width: 0.875rem;
   height: 0.875rem;
 }
+/* Done this plan: grey box, crossed out, can't be picked again */
+.exercise-row.done {
+  border-color: var(--border);
+  background: #eef0ee;
+  cursor: default;
+}
+.exercise-row.done:hover {
+  border-color: var(--border);
+}
 .exercise-row.done .exercise-label strong {
   color: var(--text-secondary);
+}
+.exercise-row.done .status-dot {
+  border-color: var(--text-hint);
+  background: var(--text-hint);
+}
+.exercise-row.done .must-do-tag {
+  opacity: 0.6;
+}
+.cross {
+  text-decoration: line-through;
+  text-decoration-thickness: 0.125rem;
+  text-decoration-color: var(--text-secondary);
+}
+/* All / Must-dos tabs: two clear outlined buttons, so both are easy to notice.
+   Only on the exercise list. The player's Standard / Easier switch keeps its own style. */
+.exercise-tabs .segmented {
+  gap: 0.5rem;
+  padding: 0;
+  background: transparent;
+}
+.exercise-tabs .segmented button {
+  border: 0.125rem solid var(--forest);
+  background: var(--card);
+  color: var(--forest);
+  font-size: 0.875rem;
+}
+.exercise-tabs .segmented button:hover:not([aria-pressed="true"]) {
+  background: #eef4f0;
+}
+.exercise-tabs .segmented button[aria-pressed="true"] {
+  background: var(--forest);
+  color: var(--card);
+}
+
+/* Short must-do reminder under the tabs: one plain line, no box */
+.must-hint {
+  margin: -0.5rem 0 1.25rem;
+  color: var(--forest);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
 }
 
 /* ---------- Player ---------- */
@@ -304,4 +355,57 @@
 }
 .button.timer-btn.is-running {
   font-size: 1rem;
+}
+
+/* Pain button: small round floating icon at the bottom right, just above "Next up".
+   2.75rem keeps it easy to tap. The message slides out on hover and on keyboard focus. */
+.player-footer {
+  position: relative;
+}
+.pain-fab {
+  position: absolute;
+  right: 1rem;
+  bottom: calc(100% + 0.625rem);
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding: 0 0.6875rem;
+  border: 0.125rem solid var(--alert);
+  border-radius: 2rem;
+  background: var(--alert-light);
+  color: var(--alert);
+  box-shadow: 0 0.25rem 0.75rem rgba(30, 42, 37, 0.18);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.pain-fab .icon {
+  flex: 0 0 auto;
+  width: 1.125rem;
+  height: 1.125rem;
+  stroke-width: 2.2;
+}
+.pain-fab-label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition:
+    max-width 300ms ease,
+    opacity 200ms ease,
+    margin 300ms ease;
+}
+.pain-fab:hover .pain-fab-label,
+.pain-fab:focus-visible .pain-fab-label {
+  max-width: 16rem;
+  margin-left: 0.375rem;
+  opacity: 1;
+}
+.pain-fab:hover {
+  background: #f1d4c9;
+}
+/* Room at the end of the steps, so the floating button never covers the last one */
+.screen-player .screen-body {
+  padding-bottom: 4rem;
 }

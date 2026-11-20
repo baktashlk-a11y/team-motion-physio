@@ -3,7 +3,7 @@
    Reset demo brings back the starting data. */
 
 /* Change the version number when the demo data changes, so old saved data is ignored. */
-const STORE_KEY = "rbc-patient-v4";
+const STORE_KEY = "rbc-patient-v5";
 
 function freshState() {
   return {
@@ -11,6 +11,7 @@ function freshState() {
     checkins: [], // saved check-ins
     session: null, // { ids, index, done, variants, returnTo }
     workoutSelection: null, // null starts with unfinished exercises; [] means none selected
+    exerciseTab: "all", // "all" or "must" on the exercise list
     draft: { feeling: "", discomfort: 0, note: "" },
     lastCheckin: null,
     moments: seedMoments(),
@@ -39,8 +40,12 @@ function loadState() {
       merged.completed = merged.completed.filter((id) =>
         EXERCISES.some((ex) => ex.id === id),
       );
+      if (!["all", "must"].includes(merged.exerciseTab))
+        merged.exerciseTab = "all";
       merged.workoutSelection = Array.isArray(merged.workoutSelection)
-        ? EXERCISES.filter((ex) => merged.workoutSelection.includes(ex.id)).map((ex) => ex.id)
+        ? EXERCISES.filter((ex) => merged.workoutSelection.includes(ex.id)).map(
+            (ex) => ex.id,
+          )
         : null;
       return merged;
     }

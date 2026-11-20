@@ -24,7 +24,7 @@ PAGES.log = {
   tab: "log",
   render() {
     const sorted = [...state.moments].sort((a, b) => b.at.localeCompare(a.at));
-    return `<section class="screen screen-log">${header("Log", null, { sub: "Moments from your day, good and hard." })}
+    return `<section class="screen screen-log">${header("Log", null, { sub: "Note moments in your day when you feel pain or feel better. Your PT reviews them before your next visit." })}
       <div class="screen-body"><h2 class="section-title">Recent</h2>
         <ul class="moment-list">${
           sorted
@@ -49,7 +49,7 @@ PAGES.logNew = {
     const d = momentDraft();
     const today = blankMoment().date;
     const otherOn = d.help.includes("Other");
-    return `<form id="moment-form" class="screen screen-moment" data-submit="moment" novalidate>${header("Log a moment", "#/log", { sub: "What you did and how your body felt." })}
+    return `<form id="moment-form" class="screen screen-moment" data-submit="moment" novalidate>${header("Log a moment", "#/log", { sub: "What you did and how your body felt. Your PT will see it before your visit." })}
       <div class="screen-body">
         <div class="field-group"><label for="moment-activity">What were you doing?</label><input id="moment-activity" type="text" maxlength="120" value="${esc(d.activity)}" placeholder="e.g. Carrying my daughter upstairs" autocomplete="off"></div>
         <fieldset class="field-group"><legend>When?</legend><div class="when-grid"><label class="sr-only" for="moment-date">Date</label><input id="moment-date" type="date" value="${d.date}" max="${today}"><label class="sr-only" for="moment-time">Time</label><input id="moment-time" type="time" value="${d.time}"></div></fieldset>
@@ -139,6 +139,10 @@ SUBMITS.moment = () => {
       "Write what else helped, or turn off + Other.",
       $("#moment-other"),
     );
+  confirmSevere(d.discomfort, () => saveMoment(d, at), "moment-discomfort");
+};
+
+function saveMoment(d, at) {
   const moment = {
     id: `moment-${Date.now()}`,
     activity: d.activity.trim(),
@@ -155,7 +159,7 @@ SUBMITS.moment = () => {
   if (moment.discomfort >= SEVERE)
     reportSevere(moment.discomfort, `while "${moment.activity.toLowerCase()}"`);
   go("/log/saved", { replace: true });
-};
+}
 
 function momentSummary(m) {
   return `<div class="session-summary"><time class="summary-label" datetime="${m.at}">${esc(momentWhen(m))}</time><h2 class="summary-title">${esc(m.activity)}</h2>

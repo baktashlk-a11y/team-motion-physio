@@ -28,8 +28,8 @@ const OTHER_CREDITS = [
 const PATIENT = {
   name: "Maya",
   goal: "Carry and play with my daughter again",
-  goalQuestion: "How easy is carrying your daughter?",
-  goalTarget: 8,
+  goalQuestion: "How hard is carrying your daughter?",
+  goalTarget: 2, // goal: 2 out of 10 or lower (0 = easy, 10 = very hard)
 };
 
 const PT = {
@@ -156,12 +156,13 @@ const EXERCISES = [
   },
 ];
 
-/* Past visits. comfort = the goal score Maya and her PT rate together. */
+/* Past visits. hard = how hard the goal feels, rated by Maya and her PT together.
+   0 = easy, 10 = very hard. Same direction as the discomfort scale: lower is better. */
 const VISITS = [
   {
     id: "first",
     offset: -19,
-    comfort: 3,
+    hard: 7,
     title: "First visit",
     plan: "Wall squats, Farmer hold, Calf raises",
     sessions: "First plan",
@@ -171,7 +172,7 @@ const VISITS = [
   {
     id: "second",
     offset: -12,
-    comfort: 4,
+    hard: 6,
     title: "Check-up",
     plan: "4 exercises · 2 must-dos",
     sessions: "3 of 4",
@@ -186,7 +187,7 @@ const VISITS = [
   {
     id: "third",
     offset: -5,
-    comfort: 6,
+    hard: 4,
     title: "Check-up",
     plan: "5 exercises · 3 must-dos",
     sessions: "4 of 5",
